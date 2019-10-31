@@ -1,8 +1,9 @@
 /*
 !.gitignore
 !.*md
-!/wrkscp
-/wrkscp/*
-!/wrkscp/*.m
-!/wrkscp/*.mat
+!/wrkspc
+/wrkspc/*
+!/wrkspc/*.m
+!/wrkspc/*.mat
 !/gis_data
+/gis_data/*.lock

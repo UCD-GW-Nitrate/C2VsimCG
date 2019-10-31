@@ -258,10 +258,10 @@ save('c2vsimGeometryData','c2vsim_mesh', 'c2vsim_nodes', 'c2vsim_rivers',...
     'c2vsim_riverNodes', 'c2vsim_wells', 'c2vsim_wshed', 'c2vsim_wshedNodes');
 %% write data to shapefiles
 load('c2vsimGeometryData.mat');
-shapewrite(c2vsim_mesh, ['..' filesep 'gis_data' filesep 'C2Vsim_mesh']); 
-shapewrite(c2vsim_nodes, ['..' filesep 'gis_data' filesep 'C2Vsim_nodes']); 
-shapewrite(c2vsim_rivers, ['..' filesep 'gis_data' filesep 'C2Vsim_rivers']); 
-shapewrite(c2vsim_riverNodes, ['..' filesep 'gis_data' filesep 'C2Vsim_riverNodes']);
-shapewrite(c2vsim_wells, ['..' filesep 'gis_data' filesep 'C2Vsim_wells']);
-shapewrite(c2vsim_wshed, ['..' filesep 'gis_data' filesep 'C2Vsim_wshed']);
-shapewrite(c2vsim_wshedNodes, ['..' filesep 'gis_data' filesep 'C2Vsim_wshedNodes']);
+shapewrite(c2vsim_mesh, ['..' filesep 'gis_data' filesep 'C2Vsim_mesh1']); 
+shapewrite(c2vsim_nodes, ['..' filesep 'gis_data' filesep 'C2Vsim_nodes1']); 
+shapewrite(c2vsim_rivers, ['..' filesep 'gis_data' filesep 'C2Vsim_rivers1']); 
+shapewrite(c2vsim_riverNodes, ['..' filesep 'gis_data' filesep 'C2Vsim_riverNodes1']);
+shapewrite(c2vsim_wells, ['..' filesep 'gis_data' filesep 'C2Vsim_wells1']);
+shapewrite(c2vsim_wshed, ['..' filesep 'gis_data' filesep 'C2Vsim_wshed1']);
+shapewrite(c2vsim_wshedNodes, ['..' filesep 'gis_data' filesep 'C2Vsim_wshedNodes1']);

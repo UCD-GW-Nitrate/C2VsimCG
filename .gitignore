@@ -1,0 +1,8 @@
+/*
+!.gitignore
+!.*md
+!/wrkscp
+/wrkscp/*
+!/wrkscp/*.m
+!/wrkscp/*.mat
+!/gis_data

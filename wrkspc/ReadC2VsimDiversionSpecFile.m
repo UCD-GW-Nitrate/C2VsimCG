@@ -4,9 +4,13 @@ fid = fopen(filename,'r');
 
 section = 1;
 cnt_divs = 1;
+tline_1 = [];
+tline_2 = [];
 while ~feof(fid)
     tline = fgetl(fid);
     if strcmp(tline(1),'C')
+        tline_2 = tline_1;
+        tline_1 = tline;
         continue;
     end
     
@@ -19,6 +23,7 @@ while ~feof(fid)
         % get the list of diversions
         c = textscan(tline,'%f');
         DivSpec(cnt_divs, 1).ID = c{1}(1);
+        DivSpec(cnt_divs, 1).DESCR = strtrim(tline_2(4:end));
         DivSpec(cnt_divs, 1).IRDV = c{1}(2);
         DivSpec(cnt_divs, 1).ICDVMAX = c{1}(3);
         DivSpec(cnt_divs, 1).FDVMAX = c{1}(4);
@@ -103,7 +108,8 @@ while ~feof(fid)
             BypassSpec.Data(id,1).FERELS = [BypassSpec.Data(id,1).FERELS; c{1}(2)];
         end
     end
-    
+    tline_2 = tline_1;
+    tline_1 = tline;
 end
 
 fclose(fid);

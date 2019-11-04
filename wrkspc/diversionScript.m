@@ -18,7 +18,7 @@ for ii = 1:length(divIds)
                            max(xx) max(yy)];
     S(ii,1).X = xx;
     S(ii,1).Y = yy;
-    S(ii,1).IRV = iriv;
+    S(ii,1).IRV = divIds(ii);
 end
 c2vsim_divPoints = S;
 %% make a shapefiles with the polygons that receive diversions

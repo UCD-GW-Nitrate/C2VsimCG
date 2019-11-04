@@ -38,5 +38,5 @@ c2vsim_divPolys = c2vsim_mesh(polyids,1);
 save('c2vsimDiversionData','DivSpec', 'BypassSpec', 'Diversions', 'c2vsim_divPoints','c2vsim_divPolys')
 %% Write to shapefiles
 load('c2vsimDiversionData','c2vsim_divPoints','c2vsim_divPolys');
-shapewrite(c2vsim_divPoints, ['..' filesep 'gis_data' filesep 'C2Vsim_divPoints1']); 
-shapewrite(c2vsim_divPolys, ['..' filesep 'gis_data' filesep 'C2Vsim_divPolys1']); 
+shapewrite(c2vsim_divPoints, ['..' filesep 'gis_data' filesep 'C2Vsim_divPoints']); 
+shapewrite(c2vsim_divPolys, ['..' filesep 'gis_data' filesep 'C2Vsim_divPolys']); 

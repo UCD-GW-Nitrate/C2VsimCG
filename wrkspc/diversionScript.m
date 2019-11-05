@@ -81,3 +81,7 @@ q = interp1(f,x,0.95);
 Qt(Qt < q) = 0;
 plot(Qt)
 title(num2str(sum(Qt)))
+%% Read diversion elements shapefile
+divElems = shaperead(['..' filesep 'gis_data' filesep 'diversionElements']);
+%%
+save('c2vsimDiversionData','divElems','-append');

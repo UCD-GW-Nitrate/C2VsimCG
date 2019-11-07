@@ -40,7 +40,7 @@ save('c2vsimDiversionData','DivSpec', 'BypassSpec', 'Diversions', 'c2vsim_divPoi
 load('c2vsimDiversionData','c2vsim_divPoints','c2vsim_divPolys');
 shapewrite(c2vsim_divPoints, ['..' filesep 'gis_data' filesep 'C2Vsim_divPoints']); 
 shapewrite(c2vsim_divPolys, ['..' filesep 'gis_data' filesep 'C2Vsim_divPolys']); 
-%%
+%% 
 D(1,1).Name = 'KERN RIVER';
 D(1,1).Nodes = 1:9;
 D(2,1).Name = 'TULE RIVER';

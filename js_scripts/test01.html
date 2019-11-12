@@ -17,6 +17,8 @@
 
     <script type="text/javascript">
         var b = 0;
+        var mylayer;
+        var circle;
         
         window.onload = function (){
             var chart = new CanvasJS.Chart("chartContainer", {
@@ -59,39 +61,50 @@
                         {x: 1408.91, y:  647046}, 
                         {x: 1790.15, y:  657770}
                     ]
-
                 }]
-
             });
             chart.render();
             function onClick(e) {
                 //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
-                
-                var circle = L.circle([38, -121.1], {
-                    color: 'red',
-                    fillColor: '#f03',
-                    fillOpacity: 0.5,
-                    radius: 500
-                });
-
-                var mylayer = L.featureGroup([circle]);
-
-                if(b == 1){
-                    mymap.removeLayer(circle);
-                    b = 0;
+                if (b==1){
+                    console.log("NO");
+                    b=0;
+                    circle.remove();
                 }
                 else{
-                    //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
-                    b = 1;
-                    mylayer.addTo(mymap);
+                    console.log("YES");
+                    b=1;
+                    circle = L.circle([38, -121.1], {
+                        color: 'red',
+                        fillColor: '#f03',
+                        fillOpacity: 0.5,
+                        radius: 5000
+                    }).addTo(mymap);
                 }
-                
+
+                //var mylayer = L.layerGroup();
                 //var circle = L.circle([38, -121.1], {
                 //    color: 'red',
                 //    fillColor: '#f03',
                 //    fillOpacity: 0.5,
-                //    radius: 500
-                //}).addTo(mymap);
+                //    radius: 1000
+                //}).addTo(mylayer);
+                
+                
+                //if(mymap.ha){
+                    
+                  //  b = 0;
+               // }
+                //else{
+                    //
+                    //b = 1;
+                //    L.control.layers(mylayer).addTo(mymap);
+                    //mylayer.addTo(mymap);
+                    //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
+                    //mymap.removeLayer(mylayer);
+                //}
+                
+                
             }
         }
     </script>

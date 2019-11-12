@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""/>
+
+            <!-- Make sure you put this AFTER Leaflet's CSS -->
+            <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin=""></script>
+
+
+
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+    <script type="text/javascript">
+        var b = 0;
+        
+        window.onload = function (){
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                zoomEnabled: true,
+                title:{
+                    text: "Pareto Front"
+                },
+                axisX: {
+                    title: "Area (in sq m)",
+                    minimum: 500,
+                    maximum: 1800
+                },
+                axisY:{
+                    title: "Cumulative water level rise (ft)",
+                    minimum: 440000,
+                    maximum: 650000
+                },
+                data: [{ 
+                    type: "scatter",
+                    click: onClick,
+                    toolTipContent: "<b>Area: </b>{x} sq.m<br/><b>WLR: </b>${y}ft",
+                    dataPoints: [
+                        {x: 505.979, y:  454413}, 
+                        {x: 688.692, y:  549094}, 
+                        {x: 715.84 , y:  563000},
+                        {x: 644.307, y:  545291}, 
+                        {x: 580.148, y:  505327}, 
+                        {x: 631.197, y:  505559}, 
+                        {x: 820.695, y:  618347}, 
+                        {x: 924.079, y:  629432}, 
+                        {x: 1010.43, y:  639695}, 
+                        {x: 999.267, y:  637333}, 
+                        {x: 695.525, y:  556206}, 
+                        {x: 564.637, y:  470594}, 
+                        {x: 1113.85, y:  645591}, 
+                        {x: 738.854, y:  580448}, 
+                        {x: 746.709, y:  608294}, 
+                        {x: 723.192, y:  563496}, 
+                        {x: 1408.91, y:  647046}, 
+                        {x: 1790.15, y:  657770}
+                    ]
+
+                }]
+
+            });
+            chart.render();
+            function onClick(e) {
+                //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
+                
+                var circle = L.circle([38, -121.1], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius: 500
+                });
+
+                var mylayer = L.featureGroup([circle]);
+
+                if(b == 1){
+                    mymap.removeLayer(circle);
+                    b = 0;
+                }
+                else{
+                    //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
+                    b = 1;
+                    mylayer.addTo(mymap);
+                }
+                
+                //var circle = L.circle([38, -121.1], {
+                //    color: 'red',
+                //    fillColor: '#f03',
+                //    fillOpacity: 0.5,
+                //    radius: 500
+                //}).addTo(mymap);
+            }
+        }
+    </script>
+    </head>
+    <body>
+        <div id="chartContainer" style="height: 570px; width: 50%;"></div>
+
+        <div id="mapid" style="width: 900px; height: 1100px; position: relative;"></div>
+        <script>
+            var mymap = L.map('mapid').setView([38, -121.1], 8);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiZ2lvcmdrIiwiYSI6ImNqc3h4Zmc3MjBqcmg0OXF4Y2E4Z3VwazMifQ.AIQu1J0MjGvQJ-B4KM5XHw'
+            }).addTo(mymap);
+        </script>
+    </body>
+</html>

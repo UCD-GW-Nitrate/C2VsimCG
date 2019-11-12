@@ -8,3 +8,4 @@
 !/wrkspc/*.mlapp
 !/gis_data
 /gis_data/*.lock
+!/js_scripts

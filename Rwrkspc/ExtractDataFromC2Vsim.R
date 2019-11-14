@@ -50,3 +50,7 @@ marker = list(size = 10, symbol = "circle",
     xaxis = list(title = "Recharge area"),
     yaxis = list(title = "Water level Rise")
   )
+
+
+# How to create a shapefile from data
+# https://gis.stackexchange.com/questions/214062/create-a-shapefile-from-dataframe-in-r-keeping-attribute-table

@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""/>
+
+            <!-- Make sure you put this AFTER Leaflet's CSS -->
+            <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+            crossorigin=""></script>
+
+
+
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script type="text/javascript" src="ParetoSolution.js"></script>
+    <script type="text/javascript" src="ParetoVariables.js"></script>
+    <script type="text/javascript" src="polygons.js"></script>
+    <script type="text/javascript" src="all_candidate_polys.js"></script>
+
+    <script type="text/javascript">
+        var b = 3;
+        var mylayer;
+        var circle;
+        var paretoPoly = new Array();
+        var divNodes=[
+            {id: 1, point:[35.440852, -118.933162]},
+            {id: 421, point:[36.357291, -119.121089]},
+            {id: 23, point:[36.784392, -119.414387 ]}
+        ];
+        
+        window.onload = function (){
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                zoomEnabled: true,
+                title:{
+                    text: "Pareto Front"
+                },
+                axisX: {
+                    title: "Area (in sq m)",
+                    minimum: 490,
+                    maximum: 1800
+                },
+                axisY:{
+                    title: "Cumulative water level rise (ft)",
+                    minimum: 440000,
+                    maximum: 650000
+                },
+                data: [{ 
+                    type: "scatter",
+                    click: onClick,
+                    toolTipContent: "<b>Area: </b>{x} sq.m<br/><b>WLR: </b>${y}ft",
+                    dataPoints: paretoPoints
+                }]
+            });
+            chart.render();
+            function onClick(e) {
+                for (i = 0; i < paretoPoly.length; i++){
+                    paretoPoly[i].remove();
+                }
+                console.log(e.dataPoint.id);
+                for (i = 0; i < paretoVariables[e.dataPoint.id-1].length; i++){
+                    //console.log(i)
+                    //console.log(paretoVariables[e.dataPoint.id][i])
+                    paretoPoly.push(L.polygon(polygons[paretoVariables[e.dataPoint.id-1][i]-1], {color: 'red'}).addTo(mymap));
+                }
+
+
+            //    //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
+            //    console.log(paretoVariables[e.dataPoint.id].length)
+            //    for (i = 0; i < paretoVariables[e.dataPoint.id].length; i++){
+            //        console.log(paretoVariables[e.dataPoint.id][i])
+            //    }
+            //    console.log(polygons.length)
+            //    //console.log(e.dataPoint.id)
+            //    if (b==1){
+            //        console.log("NO");
+            //        b=0;
+            //        circle.remove();
+            //        paretoPoly[0].remove();
+            //    }
+            //    else{
+            //        console.log("YES");
+            //        b=1;
+            //        circle = L.circle([38, -121.1], {
+            //            color: 'red',
+            //            fillColor: '#f03',
+            //            fillOpacity: 0.5,
+            //            radius: 5000
+            //        }).addTo(mymap);
+            //        paretoPoly[0] = L.polygon(polygons[0], {color: 'red'}).addTo(mymap);
+            //        paretoPoly[1] = L.polygon(polygons[1], {color: 'red'}).addTo(mymap);
+            //    }
+
+                //var mylayer = L.layerGroup();
+                //var circle = L.circle([38, -121.1], {
+                //    color: 'red',
+                //    fillColor: '#f03',
+                //    fillOpacity: 0.5,
+                //    radius: 1000
+                //}).addTo(mylayer);
+                
+                
+                //if(mymap.ha){
+                    
+                  //  b = 0;
+               // }
+                //else{
+                    //
+                    //b = 1;
+                //    L.control.layers(mylayer).addTo(mymap);
+                    //mylayer.addTo(mymap);
+                    //alert(  e.dataSeries.type + ", dataPoint { x:" + e.dataPoint.x + ", y: "+ e.dataPoint.y + " }" );
+                    //mymap.removeLayer(mylayer);
+                //}
+                
+                // <div id="mapid" style="width: 900px; height: 1100px; position: relative;"></div>
+                //<div style="width: 600px; height: 600px; float: left;"> Left </div>
+                //<div id="chartContainer" style="height: 570px; width: 50%;"></div>
+            }
+        }
+    </script>
+    </head>
+    <body>
+        <div style="width: 100%; overflow: hidden;">
+            <div id="chartContainer" style="height: 570px; width: 900px; float: left;"></div>
+            <div id="mapid" style="width: 900px; height: 1100px;  position: relative;"></div>
+        </div>
+
+        <script>
+            var mymap = L.map('mapid').setView([36, -119.5], 9);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiZ2lvcmdrIiwiYSI6ImNqc3h4Zmc3MjBqcmg0OXF4Y2E4Z3VwazMifQ.AIQu1J0MjGvQJ-B4KM5XHw'
+            }).addTo(mymap);
+
+            console.log(all_candidate_polys.length);
+            for (i = 0; i < all_candidate_polys.length; i++){
+                if (all_candidate_polys[i].DivND == 1)
+                    L.polygon(all_candidate_polys[i].Polygon, {color: '#1b9e77', opacity: 0.5, weight: 1, fillOpacity: 0.1}).addTo(mymap);
+                else if (all_candidate_polys[i].DivND == 421)
+                    L.polygon(all_candidate_polys[i].Polygon, {color: '#d95f02', opacity: 0.5, weight: 1, fillOpacity: 0.1}).addTo(mymap);
+                else if (all_candidate_polys[i].DivND == 23)
+                L.polygon(all_candidate_polys[i].Polygon, {color: '#7570b3', opacity: 0.5, weight: 1, fillOpacity: 0.1}).addTo(mymap);
+
+                L.circle(divNodes[0].point, {color: '#1b9e77', fillColor: '#1b9e77', fillOpacity: 0.5, radius: 1000}).addTo(mymap);
+                L.circle(divNodes[1].point, {color: '#d95f02', fillColor: '#d95f02', fillOpacity: 0.5, radius: 1000}).addTo(mymap);
+                L.circle(divNodes[2].point, {color: '#7570b3', fillColor: '#7570b3', fillOpacity: 0.5, radius: 1000}).addTo(mymap);
+
+            }
+
+
+        </script>
+    </body>
+</html>

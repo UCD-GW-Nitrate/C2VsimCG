@@ -52,5 +52,32 @@ for (i in 1:length(divelem)){
 cat("];", file = "../js_scripts/polygons.js", append = TRUE)
 cat("];", file = "../js_scripts/polyarea.js", append = TRUE)
 
+# Read the shapefile with the diversion polygons
+diversion_polygons <- readOGR(dsn = "../gis_data/diversionElements.shp")
+diversion_polygons4326 <- spTransform(diversion_polygons, CRS("+init=epsg:4326"))
+
+# write them as javascript variable
+cat("var all_candidate_polys = [\n", file = "../js_scripts/all_candidate_polys.js")
+for (i in 1:length(diversion_polygons$IE)) {
+  if (is.na(diversion_polygons$DivNode[i])){
+    next
+  }
+  poly <- slot(slot(slot(diversion_polygons4326, "polygons")[[i]], "Polygons")[[1]], "coords")
+  cat("\t{ id: ", diversion_polygons$IE[i], ", DivND: ", diversion_polygons$DivNode[i], file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+  cat(", Polygon: [", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+  for (j in 1:(dim(poly)[1]-1)) {
+    cat("[", poly[j,2], ",", poly[j,1], "]", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+    if (j != dim(poly)[1]-1)
+      cat(",", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+  }
+  if (i != length(diversion_polygons$IE))
+    cat("]", "},\n", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+  else
+    cat("]", "}\n", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+}
+cat("];", file = "../js_scripts/all_candidate_polys.js", append = TRUE)
+
+
+
 
 

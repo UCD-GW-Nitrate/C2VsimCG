@@ -1,0 +1,505 @@
+Current path:
+"/nfs/aqua-z0/giorgk/nsgaii"
+Configuration file: config.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Configuration model file: c2vsimconfig.dat
+Generation: 0, # Pareto Solutions: 0
+Generation: 1, # Pareto Solutions: 8
+Generation: 2, # Pareto Solutions: 10
+Generation: 3, # Pareto Solutions: 12
+Generation: 4, # Pareto Solutions: 16
+Generation: 5, # Pareto Solutions: 15
+Generation: 6, # Pareto Solutions: 17
+Generation: 7, # Pareto Solutions: 18
+Generation: 8, # Pareto Solutions: 18
+Generation: 9, # Pareto Solutions: 18
+Generation: 10, # Pareto Solutions: 16
+Generation: 11, # Pareto Solutions: 15
+Generation: 12, # Pareto Solutions: 16
+Generation: 13, # Pareto Solutions: 13
+Generation: 14, # Pareto Solutions: 12
+Generation: 15, # Pareto Solutions: 13
+Generation: 16, # Pareto Solutions: 11
+Generation: 17, # Pareto Solutions: 13
+Generation: 18, # Pareto Solutions: 10
+Generation: 19, # Pareto Solutions: 11
+Generation: 20, # Pareto Solutions: 14
+Generation: 21, # Pareto Solutions: 18
+Generation: 22, # Pareto Solutions: 14
+Generation: 23, # Pareto Solutions: 10
+Generation: 24, # Pareto Solutions: 11
+Generation: 25, # Pareto Solutions: 12
+Generation: 26, # Pareto Solutions: 14
+Generation: 27, # Pareto Solutions: 13
+Generation: 28, # Pareto Solutions: 13
+Generation: 29, # Pareto Solutions: 14
+Generation: 30, # Pareto Solutions: 17
+Generation: 31, # Pareto Solutions: 17
+Generation: 32, # Pareto Solutions: 16
+Generation: 33, # Pareto Solutions: 19
+Generation: 34, # Pareto Solutions: 21
+Generation: 35, # Pareto Solutions: 17
+Generation: 36, # Pareto Solutions: 14
+Generation: 37, # Pareto Solutions: 17
+Generation: 38, # Pareto Solutions: 17
+Generation: 39, # Pareto Solutions: 19
+Generation: 40, # Pareto Solutions: 19
+Generation: 41, # Pareto Solutions: 18
+Generation: 42, # Pareto Solutions: 17
+Generation: 43, # Pareto Solutions: 20
+Generation: 44, # Pareto Solutions: 16
+Generation: 45, # Pareto Solutions: 16
+Generation: 46, # Pareto Solutions: 17
+Generation: 47, # Pareto Solutions: 18
+Generation: 48, # Pareto Solutions: 19
+Generation: 49, # Pareto Solutions: 19
+Generation: 50, # Pareto Solutions: 20
+Generation: 51, # Pareto Solutions: 20
+Generation: 52, # Pareto Solutions: 20
+Generation: 53, # Pareto Solutions: 20
+Generation: 54, # Pareto Solutions: 14
+Generation: 55, # Pareto Solutions: 14
+Generation: 56, # Pareto Solutions: 11
+Generation: 57, # Pareto Solutions: 11
+Generation: 58, # Pareto Solutions: 11
+Generation: 59, # Pareto Solutions: 11
+Generation: 60, # Pareto Solutions: 11
+Generation: 61, # Pareto Solutions: 11
+Generation: 62, # Pareto Solutions: 11
+Generation: 63, # Pareto Solutions: 11
+Generation: 64, # Pareto Solutions: 11
+Generation: 65, # Pareto Solutions: 11
+Generation: 66, # Pareto Solutions: 11
+Generation: 67, # Pareto Solutions: 11
+Generation: 68, # Pareto Solutions: 11
+Generation: 69, # Pareto Solutions: 12
+Generation: 70, # Pareto Solutions: 12
+Generation: 71, # Pareto Solutions: 12
+Generation: 72, # Pareto Solutions: 12
+Generation: 73, # Pareto Solutions: 12
+Generation: 74, # Pareto Solutions: 12
+Generation: 75, # Pareto Solutions: 12
+Generation: 76, # Pareto Solutions: 12
+Generation: 77, # Pareto Solutions: 13
+Generation: 78, # Pareto Solutions: 13
+Generation: 79, # Pareto Solutions: 13
+Generation: 80, # Pareto Solutions: 13
+Generation: 81, # Pareto Solutions: 14
+Generation: 82, # Pareto Solutions: 10
+Generation: 83, # Pareto Solutions: 10
+Generation: 84, # Pareto Solutions: 12
+Generation: 85, # Pareto Solutions: 12
+Generation: 86, # Pareto Solutions: 12
+Generation: 87, # Pareto Solutions: 12
+Generation: 88, # Pareto Solutions: 12
+Generation: 89, # Pareto Solutions: 12
+Generation: 90, # Pareto Solutions: 12
+Generation: 91, # Pareto Solutions: 12
+Generation: 92, # Pareto Solutions: 12
+Generation: 93, # Pareto Solutions: 12
+Generation: 94, # Pareto Solutions: 13
+Generation: 95, # Pareto Solutions: 14
+Generation: 96, # Pareto Solutions: 14
+Generation: 97, # Pareto Solutions: 14
+Generation: 98, # Pareto Solutions: 14
+Generation: 99, # Pareto Solutions: 15
+Generation: 100, # Pareto Solutions: 15
+Generation: 101, # Pareto Solutions: 15
+Generation: 102, # Pareto Solutions: 15
+Generation: 103, # Pareto Solutions: 14
+Generation: 104, # Pareto Solutions: 12
+Generation: 105, # Pareto Solutions: 12
+Generation: 106, # Pareto Solutions: 10
+Generation: 107, # Pareto Solutions: 10
+Generation: 108, # Pareto Solutions: 10
+Generation: 109, # Pareto Solutions: 11
+Generation: 110, # Pareto Solutions: 12
+Generation: 111, # Pareto Solutions: 14
+Generation: 112, # Pareto Solutions: 14
+Generation: 113, # Pareto Solutions: 17
+Generation: 114, # Pareto Solutions: 19
+Generation: 115, # Pareto Solutions: 14
+Generation: 116, # Pareto Solutions: 14
+Generation: 117, # Pareto Solutions: 12
+Generation: 118, # Pareto Solutions: 12
+Generation: 119, # Pareto Solutions: 13
+Generation: 120, # Pareto Solutions: 15
+Generation: 121, # Pareto Solutions: 16
+Generation: 122, # Pareto Solutions: 17
+Generation: 123, # Pareto Solutions: 17
+Generation: 124, # Pareto Solutions: 18
+Generation: 125, # Pareto Solutions: 18
+Generation: 126, # Pareto Solutions: 18
+Generation: 127, # Pareto Solutions: 18
+Generation: 128, # Pareto Solutions: 18
+Generation: 129, # Pareto Solutions: 19
+Generation: 130, # Pareto Solutions: 17
+Generation: 131, # Pareto Solutions: 17
+Generation: 132, # Pareto Solutions: 17
+Generation: 133, # Pareto Solutions: 17
+Generation: 134, # Pareto Solutions: 18
+Generation: 135, # Pareto Solutions: 19
+Generation: 136, # Pareto Solutions: 19
+Generation: 137, # Pareto Solutions: 19
+Generation: 138, # Pareto Solutions: 21
+Generation: 139, # Pareto Solutions: 14
+Generation: 140, # Pareto Solutions: 14
+Generation: 141, # Pareto Solutions: 14
+Generation: 142, # Pareto Solutions: 14
+Generation: 143, # Pareto Solutions: 14
+Generation: 144, # Pareto Solutions: 14
+Generation: 145, # Pareto Solutions: 14
+Generation: 146, # Pareto Solutions: 14
+Generation: 147, # Pareto Solutions: 14
+Generation: 148, # Pareto Solutions: 14
+Generation: 149, # Pareto Solutions: 14
+Generation: 150, # Pareto Solutions: 14
+Generation: 151, # Pareto Solutions: 14
+Generation: 152, # Pareto Solutions: 14
+Generation: 153, # Pareto Solutions: 14
+Generation: 154, # Pareto Solutions: 14
+Generation: 155, # Pareto Solutions: 14
+Generation: 156, # Pareto Solutions: 14
+Generation: 157, # Pareto Solutions: 14
+Generation: 158, # Pareto Solutions: 15
+Generation: 159, # Pareto Solutions: 15
+Generation: 160, # Pareto Solutions: 13
+Generation: 161, # Pareto Solutions: 13
+Generation: 162, # Pareto Solutions: 14
+Generation: 163, # Pareto Solutions: 14
+Generation: 164, # Pareto Solutions: 14
+Generation: 165, # Pareto Solutions: 14
+Generation: 166, # Pareto Solutions: 14
+Generation: 167, # Pareto Solutions: 14
+Generation: 168, # Pareto Solutions: 14
+Generation: 169, # Pareto Solutions: 14
+Generation: 170, # Pareto Solutions: 14
+Generation: 171, # Pareto Solutions: 14
+Generation: 172, # Pareto Solutions: 14
+Generation: 173, # Pareto Solutions: 14
+Generation: 174, # Pareto Solutions: 14
+Generation: 175, # Pareto Solutions: 14
+Generation: 176, # Pareto Solutions: 14
+Generation: 177, # Pareto Solutions: 14
+Generation: 178, # Pareto Solutions: 14
+Generation: 179, # Pareto Solutions: 14
+Generation: 180, # Pareto Solutions: 14
+Generation: 181, # Pareto Solutions: 14
+Generation: 182, # Pareto Solutions: 14
+Generation: 183, # Pareto Solutions: 14
+Generation: 184, # Pareto Solutions: 14
+Generation: 185, # Pareto Solutions: 14
+Generation: 186, # Pareto Solutions: 14
+Generation: 187, # Pareto Solutions: 14
+Generation: 188, # Pareto Solutions: 14
+Generation: 189, # Pareto Solutions: 14
+Generation: 190, # Pareto Solutions: 14
+Generation: 191, # Pareto Solutions: 14
+Generation: 192, # Pareto Solutions: 14
+Generation: 193, # Pareto Solutions: 14
+Generation: 194, # Pareto Solutions: 14
+Generation: 195, # Pareto Solutions: 14
+Generation: 196, # Pareto Solutions: 14
+Generation: 197, # Pareto Solutions: 14
+Generation: 198, # Pareto Solutions: 14
+Generation: 199, # Pareto Solutions: 14
+Generation: 200, # Pareto Solutions: 14
+Generation: 201, # Pareto Solutions: 14
+Generation: 202, # Pareto Solutions: 14
+Generation: 203, # Pareto Solutions: 14
+Generation: 204, # Pareto Solutions: 14
+Generation: 205, # Pareto Solutions: 14
+Generation: 206, # Pareto Solutions: 14
+Generation: 207, # Pareto Solutions: 14
+Generation: 208, # Pareto Solutions: 14
+Generation: 209, # Pareto Solutions: 14
+Generation: 210, # Pareto Solutions: 14
+Generation: 211, # Pareto Solutions: 14
+Generation: 212, # Pareto Solutions: 14
+Generation: 213, # Pareto Solutions: 14
+Generation: 214, # Pareto Solutions: 14
+Generation: 215, # Pareto Solutions: 14
+Generation: 216, # Pareto Solutions: 14
+Generation: 217, # Pareto Solutions: 14
+Generation: 218, # Pareto Solutions: 14
+Generation: 219, # Pareto Solutions: 14
+Generation: 220, # Pareto Solutions: 14
+Generation: 221, # Pareto Solutions: 14
+Generation: 222, # Pareto Solutions: 14
+Generation: 223, # Pareto Solutions: 14
+Generation: 224, # Pareto Solutions: 14
+Generation: 225, # Pareto Solutions: 14
+Generation: 226, # Pareto Solutions: 15
+Generation: 227, # Pareto Solutions: 17
+Generation: 228, # Pareto Solutions: 17
+Generation: 229, # Pareto Solutions: 17
+Generation: 230, # Pareto Solutions: 17
+Generation: 231, # Pareto Solutions: 17
+Generation: 232, # Pareto Solutions: 17
+Generation: 233, # Pareto Solutions: 17
+Generation: 234, # Pareto Solutions: 17
+Generation: 235, # Pareto Solutions: 17
+Generation: 236, # Pareto Solutions: 17
+Generation: 237, # Pareto Solutions: 17
+Generation: 238, # Pareto Solutions: 17
+Generation: 239, # Pareto Solutions: 17
+Generation: 240, # Pareto Solutions: 17
+Generation: 241, # Pareto Solutions: 17
+Generation: 242, # Pareto Solutions: 17
+Generation: 243, # Pareto Solutions: 17
+Generation: 244, # Pareto Solutions: 17
+Generation: 245, # Pareto Solutions: 17
+Generation: 246, # Pareto Solutions: 17
+Generation: 247, # Pareto Solutions: 17
+Generation: 248, # Pareto Solutions: 17
+Generation: 249, # Pareto Solutions: 17
+Generation: 250, # Pareto Solutions: 17
+Generation: 251, # Pareto Solutions: 17
+Generation: 252, # Pareto Solutions: 17
+Generation: 253, # Pareto Solutions: 17
+Generation: 254, # Pareto Solutions: 17
+Generation: 255, # Pareto Solutions: 17
+Generation: 256, # Pareto Solutions: 17
+Generation: 257, # Pareto Solutions: 17
+Generation: 258, # Pareto Solutions: 17
+Generation: 259, # Pareto Solutions: 17
+Generation: 260, # Pareto Solutions: 17
+Generation: 261, # Pareto Solutions: 17
+Generation: 262, # Pareto Solutions: 17
+Generation: 263, # Pareto Solutions: 17
+Generation: 264, # Pareto Solutions: 17
+Generation: 265, # Pareto Solutions: 17
+Generation: 266, # Pareto Solutions: 17
+Generation: 267, # Pareto Solutions: 17
+Generation: 268, # Pareto Solutions: 17
+Generation: 269, # Pareto Solutions: 17
+Generation: 270, # Pareto Solutions: 17
+Generation: 271, # Pareto Solutions: 17
+Generation: 272, # Pareto Solutions: 17
+Generation: 273, # Pareto Solutions: 18
+Generation: 274, # Pareto Solutions: 18
+Generation: 275, # Pareto Solutions: 18
+Generation: 276, # Pareto Solutions: 18
+Generation: 277, # Pareto Solutions: 18
+Generation: 278, # Pareto Solutions: 18
+Generation: 279, # Pareto Solutions: 18
+Generation: 280, # Pareto Solutions: 19
+Generation: 281, # Pareto Solutions: 19
+Generation: 282, # Pareto Solutions: 19
+Generation: 283, # Pareto Solutions: 19
+Generation: 284, # Pareto Solutions: 19
+Generation: 285, # Pareto Solutions: 19
+Generation: 286, # Pareto Solutions: 20
+Generation: 287, # Pareto Solutions: 20
+Generation: 288, # Pareto Solutions: 20
+Generation: 289, # Pareto Solutions: 20
+Generation: 290, # Pareto Solutions: 20
+Generation: 291, # Pareto Solutions: 20
+Generation: 292, # Pareto Solutions: 20
+Generation: 293, # Pareto Solutions: 20
+Generation: 294, # Pareto Solutions: 21
+Generation: 295, # Pareto Solutions: 21
+Generation: 296, # Pareto Solutions: 21
+Generation: 297, # Pareto Solutions: 21
+Generation: 298, # Pareto Solutions: 21
+Generation: 299, # Pareto Solutions: 21
+Generation: 300, # Pareto Solutions: 21
+Generation: 301, # Pareto Solutions: 21
+Generation: 302, # Pareto Solutions: 21
+Generation: 303, # Pareto Solutions: 21
+Generation: 304, # Pareto Solutions: 21
+Generation: 305, # Pareto Solutions: 21
+Generation: 306, # Pareto Solutions: 21
+Generation: 307, # Pareto Solutions: 21
+Generation: 308, # Pareto Solutions: 21
+Generation: 309, # Pareto Solutions: 21
+Generation: 310, # Pareto Solutions: 21
+Generation: 311, # Pareto Solutions: 21
+Generation: 312, # Pareto Solutions: 21
+Generation: 313, # Pareto Solutions: 21
+Generation: 314, # Pareto Solutions: 21
+Generation: 315, # Pareto Solutions: 21
+Generation: 316, # Pareto Solutions: 21
+Generation: 317, # Pareto Solutions: 21
+Generation: 318, # Pareto Solutions: 20
+Generation: 319, # Pareto Solutions: 20
+Generation: 320, # Pareto Solutions: 20
+Generation: 321, # Pareto Solutions: 20
+Generation: 322, # Pareto Solutions: 20
+Generation: 323, # Pareto Solutions: 20
+Generation: 324, # Pareto Solutions: 20
+Generation: 325, # Pareto Solutions: 20
+Generation: 326, # Pareto Solutions: 20
+Generation: 327, # Pareto Solutions: 20
+Generation: 328, # Pareto Solutions: 20
+Generation: 329, # Pareto Solutions: 20
+Generation: 330, # Pareto Solutions: 20
+Generation: 331, # Pareto Solutions: 20
+Generation: 332, # Pareto Solutions: 20
+Generation: 333, # Pareto Solutions: 20
+Generation: 334, # Pareto Solutions: 20
+Generation: 335, # Pareto Solutions: 20
+Generation: 336, # Pareto Solutions: 20
+Generation: 337, # Pareto Solutions: 20
+Generation: 338, # Pareto Solutions: 20
+Generation: 339, # Pareto Solutions: 20
+Generation: 340, # Pareto Solutions: 20
+Generation: 341, # Pareto Solutions: 20
+Generation: 342, # Pareto Solutions: 20
+Generation: 343, # Pareto Solutions: 20
+Generation: 344, # Pareto Solutions: 20
+Generation: 345, # Pareto Solutions: 20
+Generation: 346, # Pareto Solutions: 20
+Generation: 347, # Pareto Solutions: 20
+Generation: 348, # Pareto Solutions: 20
+Generation: 349, # Pareto Solutions: 20
+Generation: 350, # Pareto Solutions: 20
+Generation: 351, # Pareto Solutions: 20
+Generation: 352, # Pareto Solutions: 20
+Generation: 353, # Pareto Solutions: 20
+Generation: 354, # Pareto Solutions: 20
+Generation: 355, # Pareto Solutions: 20
+Generation: 356, # Pareto Solutions: 20
+Generation: 357, # Pareto Solutions: 20
+Generation: 358, # Pareto Solutions: 20
+Generation: 359, # Pareto Solutions: 20
+Generation: 360, # Pareto Solutions: 20
+Generation: 361, # Pareto Solutions: 20
+Generation: 362, # Pareto Solutions: 20
+Generation: 363, # Pareto Solutions: 20
+Generation: 364, # Pareto Solutions: 20
+Generation: 365, # Pareto Solutions: 20
+Generation: 366, # Pareto Solutions: 20
+Generation: 367, # Pareto Solutions: 20
+Generation: 368, # Pareto Solutions: 20
+Generation: 369, # Pareto Solutions: 20
+Generation: 370, # Pareto Solutions: 20
+Generation: 371, # Pareto Solutions: 20
+Generation: 372, # Pareto Solutions: 20
+Generation: 373, # Pareto Solutions: 20
+Generation: 374, # Pareto Solutions: 20
+Generation: 375, # Pareto Solutions: 20
+Generation: 376, # Pareto Solutions: 20
+Generation: 377, # Pareto Solutions: 20
+Generation: 378, # Pareto Solutions: 20
+Generation: 379, # Pareto Solutions: 20
+Generation: 380, # Pareto Solutions: 20
+Generation: 381, # Pareto Solutions: 20
+Generation: 382, # Pareto Solutions: 20
+Generation: 383, # Pareto Solutions: 20
+Generation: 384, # Pareto Solutions: 20
+Generation: 385, # Pareto Solutions: 20
+Generation: 386, # Pareto Solutions: 20
+Generation: 387, # Pareto Solutions: 20
+Generation: 388, # Pareto Solutions: 20
+Generation: 389, # Pareto Solutions: 20
+Generation: 390, # Pareto Solutions: 20
+Generation: 391, # Pareto Solutions: 20
+Generation: 392, # Pareto Solutions: 20
+Generation: 393, # Pareto Solutions: 20
+Generation: 394, # Pareto Solutions: 20
+Generation: 395, # Pareto Solutions: 20
+Generation: 396, # Pareto Solutions: 20
+Generation: 397, # Pareto Solutions: 20
+Generation: 398, # Pareto Solutions: 20
+Generation: 399, # Pareto Solutions: 20
+Generation: 400, # Pareto Solutions: 20
+Optimization executed in 47704.1

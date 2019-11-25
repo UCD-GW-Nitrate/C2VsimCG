@@ -4,7 +4,7 @@ library("rgdal")
 source('~/GitHub/nsgaii/Rnsgaii/nsgaii_io.R')
 source("c2vsim_io.R")
 
-fl1 <- "d:\\giorgk\\Documents\\GitHub\\C2VsimCG\\OptimResults\\maxWTminArea\\paretoSolutions_44791.dat"
+fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
 ps <- nsgaii.readParetoSolution(fl1)
 
 # Read the element ids that were used in the optimization =================
@@ -60,7 +60,7 @@ cat("];", file = "../js_scripts/all_candidate_polys.js", append = TRUE)
 #  with the following fields:
 # id, x (objective 1), y (objective 2), idLand (an array with the polygon ids)
 ## write Pareto solution as javascript variable
-js_file <- "../js_scripts/paretoSolutions_44791.js"
+js_file <- "../js_scripts/paretoSolutions_58946.js"
 cat("var paretoPoints = [\n", file = js_file)
 for (i in 1:dim(ps[[2]])[1]) {
   cat("\t{ id: ", i, ", x: ", ps[[2]][i,2], ", y: ", -ps[[2]][i,1], sep = "",  file = js_file, append = TRUE)
@@ -89,7 +89,7 @@ cat("];", file = js_file, append = TRUE)
 
 # Read the Diversion Time Series file ===========================
 # 
-fileDTS <- "d:\\giorgk\\Documents\\GitHub\\C2VsimCG\\RunC2Vsim\\divTimeSeries.dat"
+fileDTS <- "../RunC2Vsim/divTimeSeries.dat"
 info <- scan(file = fileDTS, skip = 0, n = 2)
 dts.data <- matrix(nrow = info[2], ncol = info[1])
 dts.id <- vector(mode = "numeric",  length = info[1])
@@ -169,13 +169,17 @@ system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Budget3.02.ex
 # Read the result 
 GWBUDbase <- c2vsim.readGWBUD("Results/CVground.BUD", NtimeSteps = 528)
 DivBUDbase <- c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528)
+SWHYDbase <- c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
+GWHYDbase <- c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
 setwd(proj_dir)
 
 
 ### Evaluate the Pareto Solutions
 psGWBUD <- vector(mode = "list", length = dim(ps[[2]])[1])
 psDVBUD <- vector(mode = "list", length = dim(ps[[2]])[1])
-for (i in 1:dim(ps[[2]])[1]) {
+psSWHYD <- vector(mode = "list", length = dim(ps[[2]])[1])
+psGWHYD <- vector(mode = "list", length = dim(ps[[2]])[1])
+for (i in seq(1,dim(ps[[2]])[1]-1,1)) {
   # make a copy of divspec
   temp_divspec <- divspec
   temp_divdata <- divdata
@@ -186,15 +190,17 @@ for (i in 1:dim(ps[[2]])[1]) {
   unique_div_nodes <- unique(div_node_act_elem)
   
   
-  temp_divspec[[1]][1] <- temp_divspec[[1]][1] + length(unique_div_nodes)
-  
   for(j in 1:length(unique_div_nodes)){
+    # Find how many element recharged by this diversion node
+    id_el <- which(div_node_act_elem == unique_div_nodes[j])
+    if (is.na(id_el[1]))
+      next
+    
+    temp_divspec[[1]][1] <- temp_divspec[[1]][1] + 1
     temp_divspec[[2]] <- rbind(temp_divspec[[2]], 
                                c(dim(temp_divspec[[2]])[1]+1, unique_div_nodes[j], 265,1, dim(divdata)[2]-1+j, 0.95,
                                  dim(divdata)[2]-1+j, 0.05,1,1,dim(divdata)[2]-1+j,0,1,1))
     
-    # Find how many element recharges by this diversion node
-    id_el <- which(div_node_act_elem == unique_div_nodes[j])
     a <- c()
     for (k in 1:length(id_el)) {
       ii <- which(diversion_polygons$IE == active_elements[id_el[k]])
@@ -210,7 +216,7 @@ for (i in 1:dim(ps[[2]])[1]) {
   
   # Write the files
   c2vsim.writeDivSpec("../RunC2Vsim/tempRspec.dat", DivSpec = temp_divspec)
-  c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = temp_divdata, NCOLDV = 268)
+  c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = temp_divdata, NCOLDV = dim(temp_divdata)[2]-1)
   
   setwd("../RunC2Vsim")
   system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Simulation3.02.exe CVsim.in")
@@ -219,17 +225,23 @@ for (i in 1:dim(ps[[2]])[1]) {
   # Read the result 
   GWBUD <- c2vsim.readGWBUD("Results/CVground.BUD", NtimeSteps = 528)
   DivBUD <- c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528, nExpectedDivs = 249)
+  SWHYD <- c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
+  GWHYD <- c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
   psGWBUD[[i]] <- GWBUD
   psDVBUD[[i]] <- DivBUD
+  psSWHYD[[i]] <- SWHYD
+  psGWHYD[[i]] <- GWHYD
+  
   setwd(proj_dir)
 }
 
 #=========SAVE ALL RUN RESULTS===========
-save(GWBUDbase,DivBUDbase,psGWBUD,psDVBUD,file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD__44791.RData")
+save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGWHYD,
+     file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD_58946.RData")
 
 
 # Load and Process Results ------------------------------------------------
-load(file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD__44791.RData")
+load(file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD_58946.RData")
 
 
 # Compare pareto Groundwater storage and gain from stream against  --------
@@ -248,8 +260,8 @@ for (i in 1:length(psGWBUD)) {
 
 
 # Write Ending Storage  as javascript variables -------
-js_ES_file <- "../js_scripts/ES.js"
-js_GFS_file <- "../js_scripts/GFS.js"
+js_ES_file <- "../js_scripts/ES_58946.js"
+js_GFS_file <- "../js_scripts/GFS_58946.js"
 myfnc.writeTSMatrix2JS(js_ES_file, data = ES, varName = "ES", sy = 1965, sm = 10)
 myfnc.writeTSMatrix2JS(js_GFS_file, data = -GFS, varName = "GFS", sy = 1965, sm = 10)
 
@@ -285,7 +297,7 @@ for (i in 1:length(psDVBUD)) {
 
 # Make plots --------------------------------------------------------------
 # Choose a pareto solution
-ipar <- 19
+ipar <- 15
 tempdf <- merge(div_df_plot, psDiv_df_plot[[ipar]] )
 plot_ly(tempdf, x = ~Time, y = ~Dnd1, type = 'scatter', mode = 'lines', name = "Node 1",
         line = list(color = '#1b9e77', width = 4, dash = 'dot')) %>%
@@ -301,8 +313,11 @@ plot_ly(tempdf, x = ~Time, y = ~Dnd1, type = 'scatter', mode = 'lines', name = "
             line = list(color = '#7570b3', width = 2, dash = 'solid'))
 
 
+
+
+
 tm <- seq.Date(from = as.Date(paste0(1965,"/",10,"/1")),to = as.Date(paste0(2009,"/",9,"/1")),by = "month")
-ipar <- 19
+ipar <- 15
 df <- data.frame("Time" = tm, "Base" = cumsum(CVBase$NSI), "Scen" = cumsum(c2vsim.cumBUD(psGWBUD[[ipar]])$NSI))
 
 plot_ly(df, x = ~Time, y = ~Base, type = 'scatter', mode = 'lines', name = "Base",
@@ -312,6 +327,48 @@ plot_ly(df, x = ~Time, y = ~Base, type = 'scatter', mode = 'lines', name = "Base
 
 
 
+
+
+# Plot stream hydrographs for selected pareto solution --------------------
+tm <- seq.Date(from = as.Date(paste0(1965,"/",10,"/1")),to = as.Date(paste0(2009,"/",9,"/1")),by = "month")
+ipar <- 15
+iriv <- 1
+iseq <- seq(1, 9,1)
+
+
+df_plot <- data.frame("Time" = tm, "Base" = SWHYDbase[[2]][,iriv], "Scenario" = psSWHYD[[ipar]][[2]][,iriv])
+plot_ly(df_plot, x = ~Time, y = ~Base, type = 'scatter', mode = 'lines', name = "Node 1",
+        line = list(color = '#1b9e77', width = 4, dash = 'solid')) %>%
+  add_trace(y = ~Scenario, type = 'scatter', mode = 'lines', name = "Scenario",
+            line = list(color = '#d95f02', width = 2, dash = 'solid'))
+
+
+
+df_plot <- data.frame("Time" = tm, "temp" = 
+                        cumsum(psSWHYD[[ipar]][[2]][,iseq[1]] - SWHYDbase[[2]][,iseq[1]]))
+names(df_plot)[2] = paste0("RIV", as.character(iseq[1]))
+
+for (i in 2:length(iseq)) {
+  df_plot <- cbind(df_plot, data.frame("temp" = cumsum(psSWHYD[[ipar]][[2]][, iseq[i]] - SWHYDbase[[2]][, iseq[i]])))
+  names(df_plot)[i+1] = paste0("RIV", as.character(iseq[i]))
+}
+
+
+
+plot_ly(df_plot, x = ~Time, y = ~RIV1, type = 'scatter', mode = 'lines', name = "Node 1",
+       line = list(color = '#1b9e77', width = 4, dash = 'solid')) %>%
+  add_trace(y = ~RIV2, type = 'scatter', mode = 'lines', name = "Node 2",
+            line = list(color = '#d95f02', width = 2, dash = 'solid'))
+
+
+g <- ggplot(df_plot, aes_string(x="Time", y=paste0("RIV", as.character(iseq[1])))) + geom_line()
+for (i in 2:length(iseq)){
+  g <- g + geom_line(mapping = aes_string(x="Time", y=paste0("RIV", as.character(iseq[i]))))
+}
+g
+
+
+##########=====#################================================
 ## OLD VERSION write Pareto solution as javascript variable -----------
 cat("var paretoPoints = [\n", file = "../js_scripts/ParetoSolution.js")
 for (i in 1:dim(pS[[2]])[1]) {

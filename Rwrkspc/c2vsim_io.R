@@ -89,22 +89,91 @@ c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056){
   return(GWBList)
 }
 
+c2vsim.readLWBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxchar = 2000){
+  out <- vector(mode = "list", length = Nsub)
+  
+  alllines <- readLines(filename)
+  iline <- 1
+  for (i in 1:Nsub) {
+    ag_df <- data.frame(matrix(data = NA, nrow = 0, ncol = 7))
+    ur_df <- data.frame(matrix(data = NA, nrow = 0, ncol = 6))
+    ie_df <- data.frame(matrix(data = NA, nrow = 0, ncol = 2))
+    
+    
+    cnt <- 0
+    while (TRUE){
+      if (strcmp(substr(alllines[iline], 1, 2),"--")){
+        cnt <-  cnt + 1
+        if (cnt == 2)
+          break
+      }
+      iline = iline + 1
+    }
+    iline = iline + 1
+    for (j in 1:NtimeSteps) {
+      t <- strsplit(substr(alllines[iline], 1, maxchar)[[1]], split = " ")[[1]]
+      t <- as.numeric((t[which(t != "")])[-1])
+      ag_df <- rbind(ag_df, t[1:7])
+      ur_df <- rbind(ur_df, t[8:13])
+      ie_df <- rbind(ie_df, t[14:15])
+      iline <- iline + 1
+    }
+    
+    x <- c("Area", "PCUAW", "ASR", "P", "D", "S", "RU")
+    colnames(ag_df) <- x
+    x <- c("Area", "USR", "P", "D", "S", "RU")
+    colnames(ur_df) <- x
+    x <- c("Import", "Export")
+    colnames(ie_df) <- x
+    
+    temp <- vector(mode = "list", length = 3)
+    temp[[1]] <- ag_df
+    temp[[2]] <- ur_df
+    temp[[3]] <- ie_df
+    
+    out[[i]] <- temp
+  }
+  return(out)
+}
 
-c2vsim.readSWHYD <- function(filename, Nskip = 5, NtimeSteps = 1056, nSWhyd = 449){
-  #alllines <- readLines(filename)
+
+c2vsim.readGWHYD <- function(filename, Nskip = 4, NtimeSteps = 1056, maxChar = 40000){
   out <- vector(mode = "list", length = 2)
-  rivID <- read.table(file =  filename, 
-                      header = FALSE, sep = "", skip = Nskip, nrows = 1,
-                      quote = "",fill = TRUE,
-  )
+  alllines <- readLines(filename)
   
-  SWhyd <- read.table(file =  filename, 
-                    header = FALSE, sep = "", skip = Nskip+1, nrows = NtimeSteps,
-                    quote = "",fill = TRUE,
-                    )
-  out[[1]] <- as.numeric(rivID[-1:-2])
-  out[[2]] <- as.matrix(SWhyd[,-1])
+  t <- strsplit(substr(alllines[Nskip+1], 1, maxChar)[[1]], split = " ")[[1]]
+  LayerIds <- as.numeric((t[which(t != "")])[-1:-2])
   
+  t <- strsplit(substr(alllines[Nskip+2], 1, maxChar)[[1]], split = " ")[[1]]
+  NodeIds <- as.numeric((t[which(t != "")])[-1:-2])
+  
+  M <- matrix(data = NA, nrow = NtimeSteps, ncol = length(NodeIds))
+  for (i in 1:NtimeSteps) {
+    t <- strsplit(substr(alllines[Nskip+3+i], 1, maxChar)[[1]], split = " ")[[1]]
+    M[i,] <- as.numeric(t[which(t != "")][-1])
+    
+  }
+  
+  out[[1]] <- NodeIds
+  out[[2]] <- M
+  return(out)
+}
+
+
+c2vsim.readSWHYD <- function(filename, Nskip = 5, NtimeSteps = 1056, maxChar = 7000){
+  out <- vector(mode = "list", length = 2)
+  alllines <- readLines(filename)
+  t <- strsplit(substr(alllines[Nskip+1], 1, maxChar)[[1]], split = " ")[[1]]
+  NodeIds <- as.numeric((t[which(t != "")])[-1:-2])
+  M <- matrix(data = NA, nrow = NtimeSteps, ncol = length(NodeIds))
+  for (i in 1:NtimeSteps) {
+    t <- strsplit(substr(alllines[Nskip+1+i], 1, maxChar)[[1]], split = " ")[[1]]
+    M[i,] <- as.numeric(t[which(t != "")][-1])
+    
+  }
+  
+  out[[1]] <- NodeIds
+  out[[2]] <- M
   return(out)
 }
 
@@ -179,7 +248,7 @@ c2vsim.readDiversionBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxC
 #' c2vsim.cumBud summarizes the groundwater budget for the entire domain or the
 #' specified ids
 #'
-#' @param GWB This is a List of dara frames with the budget terms for each
+#' @param GWB This is a List of data frames with the budget terms for each
 #'   subregion. You can obtain this as the output of the c2vsim.readGWBUD
 #'   function
 #' @param ids the ids of the subregion you want to summarize
@@ -189,7 +258,7 @@ c2vsim.readDiversionBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxC
 #'
 #' @examples
 #' GWBUDALL <- c2vsim.cumBUD(GWB, ids = c(5,10,21))
-c2vsim.cumBUD <- function(GWB, ids = NA){
+c2vsim.cumGWBUD <- function(GWB, ids = NA){
   if (is.na(ids)){
     ids <- 1:length(GWB)
   }
@@ -199,6 +268,29 @@ c2vsim.cumBUD <- function(GWB, ids = NA){
     GWBALL[,-1] = GWBALL[,-1] + GWB[[i]][,-1] 
   }
   return (GWBALL)
+}
+
+c2vsim.cumLWBUD <- function(LWB, ids = NA){
+  if (is.na(ids)){
+    ids <- 1:length(LWB)
+  }
+  AGALL <- LWB[[1]][[1]]
+  AGALL[,] = 0
+  URALL <- LWB[[1]][[2]]
+  URALL[,] = 0
+  IEALL <- LWB[[1]][[3]]
+  IEALL[,] = 0
+  for (i in ids) {
+    AGALL = AGALL + LWB[[i]][[1]] 
+    URALL = URALL + LWB[[i]][[2]]
+    IEALL = IEALL + LWB[[i]][[3]]
+  }
+  out <- vector(mode = "list", length = 3)
+  out[[1]] <- AGALL
+  out[[2]] <- URALL
+  out[[3]] <- IEALL
+  
+  return(out)
 }
 
 

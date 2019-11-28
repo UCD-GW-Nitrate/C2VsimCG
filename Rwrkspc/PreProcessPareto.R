@@ -53,9 +53,38 @@ for (j in 1:length(C2Vsim_mesh)) {
   a[j] <- slot(slot(C2Vsim_mesh, "polygons")[[j]], "area")/1000000
 }
 
-elemInfoFile <- "../RunC2Vsim/ElemInfo.dat"
+
+
+# Write element Info Distance ---------------------------------------------
+C2Vsim_mesh <- readOGR(dsn = "../gis_data/C2Vsim_mesh.shp")
+diversion_elements <- readOGR(dsn = "../gis_data/diversionElements.shp")
+c2vsimRivers <- readOGR(dsn = "../gis_data/C2Vsim_riverNodes.shp")
+a <- vector(mode = "numeric", length = length(C2Vsim_mesh))
+for (i in 1:length(C2Vsim_mesh)) {
+  id <- which(diversion_elements$IE == C2Vsim_mesh$IE[i])
+  if (length(id) == 0){
+    a[i] <- -9
+    next
+  }
+  
+  div_id <- diversion_elements$DivNode[id]
+  if (is.na(div_id)){
+    a[i] <- -9
+    next
+  }
+  
+  id_rivND <- which(c2vsimRivers$IRV == div_id)
+  div_coord <- slot(c2vsimRivers, "coords")[id_rivND,]
+
+  crd <- shapefile.coords(C2Vsim_mesh, i)
+  cc <- calcCentroid(crd)
+  a[i] <- sqrt(sum((cc - div_coord)^2))/1000
+}
+
+elemInfoFile <- "../RunC2Vsim/ElemInfoDist.dat"
 cat(length(a), "\n", sep = "",  file = elemInfoFile)
 write(x = t(cbind(C2Vsim_mesh$IE,a)), file = elemInfoFile, ncolumns = 2, sep = " ", append = TRUE)
+
 
 
 # Write diversion node element correspondance -----------------------------

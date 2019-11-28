@@ -317,7 +317,7 @@ c2vsim.cumLWBUD <- function(LWB, ids = NA){
 #'
 #' @examples
 c2vsim.readDivSpec <- function(filename){
-  DIVSPEC = vector(mode = "list", length = )
+  DIVSPEC = vector(mode = "list", length = 7)
   headers <- vector(mode = "numeric", length = 4)
   con <- file(filename, open = "r")
   fileLines <- readLines(con)
@@ -339,9 +339,12 @@ c2vsim.readDivSpec <- function(filename){
       section  <-  section + 1
       RDV <- matrix(data = NA,nrow = NRDV, ncol = 14)
       RDVELEM <- vector(mode = "list", length = NRDV)
+      RDVnames <- c()
       i <- i + 1
     }
     else if (section == 2){
+      div_name <- strsplit (substr(fileLines[i-2],4,1000), "\t")[[1]][1]
+      RDVnames <- c(RDVnames, div_name)
       irdv <-  irdv + 1
       RDV[irdv,] <- scan(text = fileLines[i], n=14, quiet = TRUE)
       i <- i + 1
@@ -427,6 +430,7 @@ c2vsim.readDivSpec <- function(filename){
   DIVSPEC[[4]] <- BYPS
   DIVSPEC[[5]] <- BYPSRT
   DIVSPEC[[6]] <- BYPSELEM
+  DIVSPEC[[7]] <- RDVnames
   return(DIVSPEC)
 }
 

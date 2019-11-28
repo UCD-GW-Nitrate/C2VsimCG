@@ -4,7 +4,8 @@ library("rgdal")
 source('~/GitHub/nsgaii/Rnsgaii/nsgaii_io.R')
 source("c2vsim_io.R")
 
-fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
+#fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
+fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_61663.dat"
 ps <- nsgaii.readParetoSolution(fl1)
 
 # Read the element ids that were used in the optimization =================
@@ -179,7 +180,7 @@ psGWBUD <- vector(mode = "list", length = dim(ps[[2]])[1])
 psDVBUD <- vector(mode = "list", length = dim(ps[[2]])[1])
 psSWHYD <- vector(mode = "list", length = dim(ps[[2]])[1])
 psGWHYD <- vector(mode = "list", length = dim(ps[[2]])[1])
-for (i in seq(1,dim(ps[[2]])[1]-1,1)) {
+for (i in seq(1,dim(ps[[2]])[1],1)) {
   # make a copy of divspec
   temp_divspec <- divspec
   temp_divdata <- divdata
@@ -237,31 +238,31 @@ for (i in seq(1,dim(ps[[2]])[1]-1,1)) {
 
 #=========SAVE ALL RUN RESULTS===========
 save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGWHYD,
-     file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD_58946.RData")
+     file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_61663.RData")
 
 
 # Load and Process Results ------------------------------------------------
-load(file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD_58946.RData")
+load(file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD_61663.RData")
 
 
 # Compare pareto Groundwater storage and gain from stream against  --------
 
 ES <- matrix(data = 0, nrow = length(GWBUDbase[[1]][[1]]), ncol = length(psGWBUD))
 GFS <- matrix(data = 0, nrow = length(GWBUDbase[[1]][[1]]), ncol = length(psGWBUD))
-baseBudAll <- c2vsim.cumBUD(GWBUDbase)
+baseBudAll <- c2vsim.cumGWBUD(GWBUDbase)
 for (i in 1:length(psGWBUD)) {
   if (is.null( psGWBUD[[i]]))
     next
   
-  scenarioAll <- c2vsim.cumBUD(psGWBUD[[i]])
+  scenarioAll <- c2vsim.cumGWBUD(psGWBUD[[i]])
   ES[,i] <- (scenarioAll$ES - baseBudAll$ES)/1000000
   GFS[,i] <- cumsum(scenarioAll$GFS - baseBudAll$GFS)/1000000
 }
 
 
 # Write Ending Storage  as javascript variables -------
-js_ES_file <- "../js_scripts/ES_58946.js"
-js_GFS_file <- "../js_scripts/GFS_58946.js"
+js_ES_file <- "../js_scripts/ES_61663.js"
+js_GFS_file <- "../js_scripts/GFS_61663.js"
 myfnc.writeTSMatrix2JS(js_ES_file, data = ES, varName = "ES", sy = 1965, sm = 10)
 myfnc.writeTSMatrix2JS(js_GFS_file, data = -GFS, varName = "GFS", sy = 1965, sm = 10)
 

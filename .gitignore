@@ -1,24 +1,36 @@
 /*
 !.gitignore
 !.*md
+#
 !/wrkspc
 /wrkspc/*
 !/wrkspc/*.m
 !/wrkspc/*.mat
 !/wrkspc/*.mlapp
+#
 !/gis_data
 /gis_data/*.lock
+#
 !/js_scripts
+#
 !/Rwrkspc
 /Rwrkspc/*
 !/Rwrkspc/*.R
 !/Rwrkspc/*.Rproj
+#
 !/OptimResults
 /OptimResults/*
 !/OptimResults/*.md
+#
 !/OptimResults/maxWTminArea
 /OptimResults/maxWTminArea/*
 !/OptimResults/maxWTminArea/*.dat
 !/OptimResults/maxWTminArea/*.log
+#
+!/OptimResults/maxWTminDist
+/OptimResults/maxWTminDist/*
+!/OptimResults/maxWTminDist/*.dat
+!/OptimResults/maxWTminDist/*.log
+
 
 

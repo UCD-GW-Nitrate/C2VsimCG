@@ -33,3 +33,16 @@ myfnc.writeTSMatrix2JS <- function(fileName, data, varName = "jsvar", sy = 2000,
   }
   cat("];", file = fileName, append = TRUE)
 }
+
+shapefile.coords <- function(sh, id){
+  coords <- slot( slot( slot(sh, "polygons")[[id]], "Polygons" )[[1]] , "coords")
+  return(coords)
+}
+
+calcCentroid <- function (coords){
+  n <- dim(coords)[1]
+  if (sum(coords[1,] - coords[n,]) == 0)
+    coords <- coords[-n,]
+  
+  return(apply(coords,2,sum)/dim(coords)[1])
+}

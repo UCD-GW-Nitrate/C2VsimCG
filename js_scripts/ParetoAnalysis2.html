@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <style>
+            body{color: white;}
+            .split {
+            height: 100%;
+            width: 60%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            overflow-x: hidden;
+            padding-top: 20px;
+            }
+
+            .left {
+            left: 0;
+            background-color: whitesmoke;
+            }
+
+            .right {
+            right: 0;
+            background-color: whitesmoke;
+            }
+
+        </style>
+
+
+
+
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+
+
+
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script type="text/javascript" src="all_candidate_polys.js"></script>
+    <script type="text/javascript" src="paretoSolutions_61663.js"></script>
+    <script type="text/javascript" src="diversionTimeSeries.js"></script>
+    <script type="text/javascript" src="ES_61663.js"></script>
+    <script type="text/javascript" src="GFS_61663.js"></script>
+    <script type="text/javascript" src="C2Vsim_rivers.js"></script>
+
+    <script type="text/javascript">
+        var b = 3;
+        var mylayer;
+        var circle;
+        var paretoPoly = new Array();
+        var divColors = ['#1b9e77', '#d95f02','#7570b3'];
+        //var divNodes=[
+        //    {id: 1, point:[35.440852, -118.933162]},
+        //    {id: 421, point:[36.357291, -119.121089]},
+        //    {id: 23, point:[36.784392, -119.414387 ]}
+        //];
+        
+        window.onload = function (){
+            var chartPareto = new CanvasJS.Chart("chartPareto", {
+                theme:"light2",
+                animationEnabled: true,
+                zoomEnabled: true,
+                title:{
+                    text: "Pareto Front"
+                },
+                axisX: {
+                    title: "Cumulative distance (km)",
+                    minimum: 500,
+                    maximum: 1250
+                },
+                axisY:{
+                    title: "Cumulative water level rise (ft)",
+                    minimum: 140000,
+                    maximum: 230000
+                },
+                data: [{ 
+                    type: "scatter",
+                    click: onClick,
+                    toolTipContent: "<b>ID: </b>{id}<br/><b>Area: </b>{x} sq.m<br/><b>WLR: </b>{y}ft",
+                    color: '#08519c', // #cb181d
+                    dataPoints: paretoPoints
+                    },
+                    { 
+                    type: "scatter",
+                    color: '#cb181d', // #cb181d
+                    markerSize: 15,
+                    dataPoints: []
+                }
+                ]
+            });
+            chartPareto.render();
+
+            function onClick(e) {
+
+                for (i = 0; i < paretoPoly.length; i++){
+                    paretoPoly[i].remove();
+                }
+                //console.log(e.dataPoint.id);
+                //console.log(e.dataPoint.idLand.length)
+                for (i = 0; i < e.dataPoint.idLand.length; i++){
+                    //console.log(i)
+                    //console.log(e.dataPoint.idLand[i])
+                    paretoPoly.push(L.polygon(all_candidate_polys[e.dataPoint.idLand[i]-1].Polygon, {color: '#cb181d', weight: 2, fillOpacity: 0.05}).addTo(mymap));
+                }
+
+                if (chartPareto.options.data[1].dataPoints.length == 1){
+                    chartPareto.options.data[1].dataPoints[0].x = e.dataPoint.x;
+                    chartPareto.options.data[1].dataPoints[0].y = e.dataPoint.y;
+                }   
+                else
+                    chartPareto.options.data[1].dataPoints.push({ x: e.dataPoint.x, y: e.dataPoint.y});
+                chartPareto.render(); 
+
+                BUDchart.options.data[0].dataPoints = ES[e.dataPoint.id-1].Values;
+                BUDchart.options.data[1].dataPoints = GFS[e.dataPoint.id-1].Values;
+                BUDchart.render();
+
+            }
+
+            var dtschart = new CanvasJS.Chart("chartDTS", {
+                theme:"light2",
+                animationEnabled: true,
+                zoomEnabled: true,
+                title:{
+                    text: "Cumulative Diversion of the 95 percentile"
+                },
+                axisX: {
+                    title: "Time",
+                    suffix : ""
+                },
+                axisY: {
+                    title: "Diversion [TAF]",
+                    suffix : ""//,
+                    //lineColor: "#4F81BC",
+                    //tickColor: "#4F81BC"
+                },
+                toolTip: {
+                    shared: true
+                },
+                legend:{
+                    cursor:"pointer",
+                    //itemclick : toggleDataSeries
+                },
+                data: [{
+                        type: "spline",
+                        visible: true,
+                        name: "Bakersfield",
+                        color: divColors[0],
+                        lineThickness: 3,
+                        //xValueFormatString: "#### sec",
+                        //yValueFormatString: "#,##0.00 m/s",
+                        dataPoints: divNodes[0].Values
+                    },
+                    {
+                        type: "spline",
+                        visible: true,
+                        name: "Visalia",
+                        color: divColors[1],
+                        lineThickness: 3,
+                        //yValueFormatString: "#,##0.# m",
+                        dataPoints: divNodes[1].Values
+                    },
+                    {
+                        type: "spline",
+                        visible: true,
+                        name: "Fresno",
+                        color: divColors[2],
+                        lineThickness: 3,
+                        //yValueFormatString: "#,##0.# m",
+                        dataPoints: divNodes[2].Values
+                    }
+                ]
+            });
+            dtschart.render();
+
+
+            var BUDchart = new CanvasJS.Chart("BUDchart", {
+                theme:"light2",
+                animationEnabled: true,
+                zoomEnabled: true,
+                title:{
+                    text: "Storage and Stream gain"
+                },
+                axisX: {
+                    title: "Time",
+                    suffix : ""
+                },
+                axisY: {
+                    title: "Cumulative volume [MAF]",
+                    suffix : "",
+                    //lineColor: "#4F81BC",
+                    //tickColor: "#4F81BC"
+                },
+                toolTip: {
+                    shared: true
+                },
+                legend:{
+                    cursor:"pointer",
+                    //itemclick : toggleDataSeries
+                },
+                data: [{
+                        type: "spline",
+                        visible: true,
+                        name: "Storage",
+                        color: '#fc8d59',
+                        lineThickness: 3,
+                        //xValueFormatString: "#### sec",
+                        //yValueFormatString: "#,##0.00 m/s",
+                        dataPoints: []//ES[0].Values
+                    },
+                    {
+                        type: "spline",
+                        visible: true,
+                        name: "Stream Gain",
+                        color: '#91bfdb',
+                        lineThickness: 3,
+                        //yValueFormatString: "#,##0.# m",
+                        dataPoints: []//GFS[0].Values
+                    }
+                ]
+            });
+            BUDchart.render();
+
+
+            //<div style="width: 100%; overflow: hidden;">
+            //<div id="chartPareto" style="height: 570px; width: 900px; float: left;"></div>
+            //<div id="mapid" style="width: 900px; height: 1100px;  position: relative;"></div>
+            //<div id="chartDTS" style="height: 370px; width: 700px;"></div>
+           //</div>
+
+        }
+    </script>
+    </head>
+    <body>
+        <div class="split left">
+                <div id="chartPareto" style="height: 450px; width: 600px;"></div>
+                <p>
+
+                </p>
+                <div id="BUDchart" style="height: 350px; width: 900px;"></div>
+                
+                <p>
+
+                </p>
+                <div id="chartDTS" style="height: 350px; width: 900px;"></div>
+                
+                
+        </div>
+        <div class="split right">
+                <div id="mapid" style="width: 800px; height: 1200px;"></div>
+        </div>
+
+         
+        
+
+        <script>
+            var mymap = L.map('mapid').setView([36, -119.5], 9);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiZ2lvcmdrIiwiYSI6ImNqc3h4Zmc3MjBqcmg0OXF4Y2E4Z3VwazMifQ.AIQu1J0MjGvQJ-B4KM5XHw'
+            }).addTo(mymap)
+
+            L.geoJSON(c2vsim_rivers).addTo(mymap);
+
+            //console.log(all_candidate_polys.length);
+            for (i = 0; i < all_candidate_polys.length; i++){
+                if (all_candidate_polys[i].DivND == 1)
+                    L.polygon(all_candidate_polys[i].Polygon, {color: '#1b9e77', opacity: 0.5, weight: 1, fillOpacity: 0.1}).addTo(mymap);
+                else if (all_candidate_polys[i].DivND == 421)
+                    L.polygon(all_candidate_polys[i].Polygon, {color: '#d95f02', opacity: 0.5, weight: 1, fillOpacity: 0.1}).addTo(mymap);
+                else if (all_candidate_polys[i].DivND == 23)
+                L.polygon(all_candidate_polys[i].Polygon, {color: '#7570b3', opacity: 0.5, weight: 1, fillOpacity: 0.1}).addTo(mymap); 
+            }
+
+            for (i = 0; i < divNodes.length; i++){
+                L.circle(divNodes[i].point, {color: divColors[i], fillColor: divColors[i], opacity: 0.1, weight: 2, fillOpacity: 0.5, radius: 2000}).addTo(mymap);
+            }
+        </script>
+    </body>
+</html>

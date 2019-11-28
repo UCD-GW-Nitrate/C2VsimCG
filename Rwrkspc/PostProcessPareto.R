@@ -61,7 +61,7 @@ cat("];", file = "../js_scripts/all_candidate_polys.js", append = TRUE)
 #  with the following fields:
 # id, x (objective 1), y (objective 2), idLand (an array with the polygon ids)
 ## write Pareto solution as javascript variable
-js_file <- "../js_scripts/paretoSolutions_58946.js"
+js_file <- "../js_scripts/paretoSolutions_61663.js"
 cat("var paretoPoints = [\n", file = js_file)
 for (i in 1:dim(ps[[2]])[1]) {
   cat("\t{ id: ", i, ", x: ", ps[[2]][i,2], ", y: ", -ps[[2]][i,1], sep = "",  file = js_file, append = TRUE)
@@ -71,7 +71,7 @@ for (i in 1:dim(ps[[2]])[1]) {
     for (j in 1:length(bitid)) {
       el_id <- divelem[bitid[j]]
       # We have to find in which row this element id is written in the all_candidate_polys variable
-      # This is show in tempv calculated from a snippet bellow
+      # This is shown in tempv calculated from a snippet above
       id <- which(tempv == el_id)
       cat(id, sep = "", file = js_file, append = TRUE)
       if (j !=length(bitid))
@@ -242,7 +242,7 @@ save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGW
 
 
 # Load and Process Results ------------------------------------------------
-load(file = "../OptimResults/maxWTminArea/ParetoSolutionsBUD_61663.RData")
+load(file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_61663.RData")
 
 
 # Compare pareto Groundwater storage and gain from stream against  --------

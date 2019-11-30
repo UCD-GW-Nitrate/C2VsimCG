@@ -31,6 +31,10 @@
 /OptimResults/maxWTminDist/*
 !/OptimResults/maxWTminDist/*.dat
 !/OptimResults/maxWTminDist/*.log
+#
+!/Hwrkspc
+/Hwrkspc/*
+!/Hwrkspc/*.hipnc
 
 
 

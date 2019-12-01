@@ -85,7 +85,6 @@ id <- which(MSH[, 5] == 0)
 cc[id,1:2]  <- cc[id,1:2]/3
 cc[id,3:5] <- cc[id,3:5]/6
 
-cbind(XY[,2:3], (Zelev[,1] + Zelev[,2])/2, CVparam[[1]]$PKH)
 
 write.table(cbind(XY[,2:3], (Zelev[,1] + Zelev[,2])/2, CVparam[[1]]$PKH), file = "temp.dat", row.names = FALSE, col.names = FALSE ,append = FALSE)
 write.table(cbind(XY[,2:3], (Zelev[,2] + Zelev[,3])/2, CVparam[[2]]$PKH), file = "temp.dat", row.names = FALSE, col.names = FALSE ,append = TRUE)

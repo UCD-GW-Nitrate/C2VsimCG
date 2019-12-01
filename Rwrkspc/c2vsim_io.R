@@ -450,7 +450,7 @@ c2vsim.readDivData <- function(filename, skiplines = 376, NtimeSteps = 1056){
   
   DivData <- read.table(file =  filename, 
                       header = FALSE, sep = "", skip = skiplines , nrows = NtimeSteps,
-                      quote = "",fill = TRUE,
+                      quote = "",fill = TRUE
                       )
   return(DivData)
 }
@@ -508,4 +508,41 @@ c2vsim.writeDivData <- function(filename, data, NCOLDV = 265, FACTDV = 43560000.
   write.table(data, file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
   #write(data, file = con, ncolumns = dim(data)[2])
   close(con)
+}
+
+# At the moment this reads only the OPTION 2 (for Aquifer Parameter Definition)
+c2vsim.readParam <- function(filename, nSkip = 267, Nnodes = 1393, Nlay = 3){
+  PRM <- vector(mode = "list", length = Nlay)
+  df <- data.frame(matrix(nrow = Nnodes, ncol = 10))
+  colnames(df) <- c("PKH", "PS", "PN", "PV", "PL", "SCE", "SCI",  "DC", "DCMIN", "HC")
+  for (i in 1:Nlay) {
+    PRM[[i]] <- df
+  }
+  
+  allLines <- readLines(filename)
+  index <- seq(from = 1, to = 1393*Nlay, by = Nlay) + nSkip
+  ii <- 0
+  for (i in index) {
+    ii <- ii + 1
+    PRM[[1]][ii,] <- scan(text = allLines[i], n = 11, quiet = TRUE)[-1]
+    for (j in 2:Nlay) {
+      PRM[[j]][ii,] <- scan(text = allLines[i+j-1], n = 10, quiet = TRUE)
+    }
+  }
+  
+  return(PRM)
+}
+
+c2vsim.readStrat <- function(filename, nSkip = 92, Nnodes = 1393, Nlay = 3){
+  matlabels <- c("ID", "ELV")
+  for (i in 1:Nlay) {
+    matlabels <- c(matlabels, paste0("L", i, "1"), paste0("L", i, "2"))
+  }
+  matlabels <- c(matlabels, "dummy")
+  ELEV <-   read.table(file = filename,
+                    header = FALSE, sep = "", skip = nSkip, nrows = Nnodes,
+                    quote = "",fill = TRUE,
+                    col.names = matlabels)
+  return(ELEV[,-dim(ELEV)[2]])
+  
 }

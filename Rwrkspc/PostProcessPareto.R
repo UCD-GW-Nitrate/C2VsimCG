@@ -5,7 +5,7 @@ source('~/GitHub/nsgaii/Rnsgaii/nsgaii_io.R')
 source("c2vsim_io.R")
 
 #fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
-fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_61663.dat"
+fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_63246.dat"
 ps <- nsgaii.readParetoSolution(fl1)
 
 # Read the element ids that were used in the optimization =================
@@ -61,7 +61,7 @@ cat("];", file = "../js_scripts/all_candidate_polys.js", append = TRUE)
 #  with the following fields:
 # id, x (objective 1), y (objective 2), idLand (an array with the polygon ids)
 ## write Pareto solution as javascript variable
-js_file <- "../js_scripts/paretoSolutions_61663.js"
+js_file <- "../js_scripts/paretoSolutions_63246.js"
 cat("var paretoPoints = [\n", file = js_file)
 for (i in 1:dim(ps[[2]])[1]) {
   cat("\t{ id: ", i, ", x: ", ps[[2]][i,2], ", y: ", -ps[[2]][i,1], sep = "",  file = js_file, append = TRUE)
@@ -238,11 +238,11 @@ for (i in seq(1,dim(ps[[2]])[1],1)) {
 
 #=========SAVE ALL RUN RESULTS===========
 save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGWHYD,
-     file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_61663.RData")
+     file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData")
 
 
 # Load and Process Results ------------------------------------------------
-load(file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_61663.RData")
+load(file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData")
 
 
 # Compare pareto Groundwater storage and gain from stream against  --------
@@ -261,8 +261,8 @@ for (i in 1:length(psGWBUD)) {
 
 
 # Write Ending Storage  as javascript variables -------
-js_ES_file <- "../js_scripts/ES_61663.js"
-js_GFS_file <- "../js_scripts/GFS_61663.js"
+js_ES_file <- "../js_scripts/ES_63246.js"
+js_GFS_file <- "../js_scripts/GFS_63246.js"
 myfnc.writeTSMatrix2JS(js_ES_file, data = ES, varName = "ES", sy = 1965, sm = 10)
 myfnc.writeTSMatrix2JS(js_GFS_file, data = -GFS, varName = "GFS", sy = 1965, sm = 10)
 

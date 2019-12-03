@@ -5,7 +5,7 @@
             body{color: white;}
             .split {
             height: 100%;
-            width: 60%;
+            width: 50%;
             position: fixed;
             z-index: 1;
             top: 0;
@@ -43,10 +43,10 @@
 
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script type="text/javascript" src="all_candidate_polys.js"></script>
-    <script type="text/javascript" src="paretoSolutions_61663.js"></script>
+    <script type="text/javascript" src="paretoSolutions_63246.js"></script>
     <script type="text/javascript" src="diversionTimeSeries.js"></script>
-    <script type="text/javascript" src="ES_61663.js"></script>
-    <script type="text/javascript" src="GFS_61663.js"></script>
+    <script type="text/javascript" src="ES_63246.js"></script>
+    <script type="text/javascript" src="GFS_63246.js"></script>
     <script type="text/javascript" src="C2Vsim_rivers.js"></script>
 
     <script type="text/javascript">
@@ -71,13 +71,13 @@
                 },
                 axisX: {
                     title: "Cumulative distance (km)",
-                    minimum: 500,
-                    maximum: 1250
+                    minimum: 450,
+                    maximum: 1900
                 },
                 axisY:{
                     title: "Cumulative water level rise (ft)",
-                    minimum: 140000,
-                    maximum: 230000
+                    minimum: 150000,
+                    maximum: 240000
                 },
                 data: [{ 
                     type: "scatter",
@@ -239,21 +239,21 @@
     </head>
     <body>
         <div class="split left">
-                <div id="chartPareto" style="height: 450px; width: 600px;"></div>
+                <div id="chartPareto" style="height: 450px; width: 90%;"></div>
                 <p>
 
                 </p>
-                <div id="BUDchart" style="height: 350px; width: 900px;"></div>
+                <div id="BUDchart" style="height: 350px; width: 90%;"></div>
                 
                 <p>
 
                 </p>
-                <div id="chartDTS" style="height: 350px; width: 900px;"></div>
+                <div id="chartDTS" style="height: 350px; width: 90%;"></div>
                 
                 
         </div>
         <div class="split right">
-                <div id="mapid" style="width: 800px; height: 1200px;"></div>
+                <div id="mapid" style="width: 90%; height: 1000px;"></div>
         </div>
 
          

@@ -37,11 +37,19 @@ c2vsim.readNodes <- function(filename, ND = 1393, Nskip = 80 ){
 #'
 #' @examples
 #' MSH <- c2vsim.Mesh(CVelement.dat")
-c2vsim.readMesh <- function(filename, NE = 1392, Nskip = 93){
-  M <-   read.table(file = filename,
-                     header = FALSE, sep = "", skip = Nskip, nrows = NE,
-                     quote = "",fill = TRUE,
-                    col.names = c("ID", "ND1", "ND2", "ND3", "ND4"))
+c2vsim.readMesh <- function(filename, NE = 1392, Nskip = 93, Ncols = 5){
+  if (Ncols == 5){
+    M <-   read.table(file = filename,
+                       header = FALSE, sep = "", skip = Nskip, nrows = NE,
+                       quote = "",fill = TRUE,
+                      col.names = c("ID", "ND1", "ND2", "ND3", "ND4"))
+  }
+  else if (Ncols == 6) {
+    M <-   read.table(file = filename,
+                      header = FALSE, sep = "", skip = Nskip, nrows = NE,
+                      quote = "",fill = TRUE,
+                      col.names = c("ID", "ND1", "ND2", "ND3", "ND4", "SUB"))
+  }
   return(M)
 }
 
@@ -544,5 +552,99 @@ c2vsim.readStrat <- function(filename, nSkip = 92, Nnodes = 1393, Nlay = 3){
                     quote = "",fill = TRUE,
                     col.names = matlabels)
   return(ELEV[,-dim(ELEV)[2]])
+}
+
+
+#' c2vsim.readHeadALL
+#' Reads the heads the groundwater head values for all layers all time steps
+#' The default values correspond to the fine grid version.
+#'
+#' @param filename is the name of the file with the groundwater head values.
+#' @param nNode is the total number of nodes in the simulation.
+#' @param nLay is the Number of layers.
+#' @param NtimeSteps is the number of monthly time steps.
+#' @param nSkip is the number of lines to skip before the first time step values are printed
+#'
+#' @return a list of lists. The first item in the list is a vector with the node ids.
+#' The second lement in the list is a data frame with the time stamps
+#' The third length NtimeSteps where each element in the list is a matrix 
+#' nNode x nLay.
+#' @export
+#'
+#' @examples
+c2vsim.readHeadALL <- function(filename, nNode = 30179, nLay = 4, NtimeSteps = 505, nSkip = 6, quiet = FALSE){
+  # A list to hold the outputs
+  out <- vector(mode = "list", length = 3)
+  # A list to hold the head values for each time step
+  Hall <- vector(mode = "list", length = NtimeSteps)
+  # a Data frame to hold the dates
+  timedf <- data.frame(matrix(data = NA, nrow = NtimeSteps, ncol = 3), row.names = NULL)
+  colnames(timedf) <- c("Y", "M", "D")
+  # Read all lines
+  allLines <- readLines(filename)
+  # allocate memory for head data for one time step
+  H <- matrix(data = NA, nrow = nNode, ncol = nLay)
+  # get the indices of the first laye with the time stamp
+  iln <- seq(nSkip+1, length(allLines), nLay)
+  # Specify the maximum number of characters to read from each line
+  maxChar <- nNode*13 + 25
   
+  # Read the node IDS
+  tmp <- strsplit(substr(allLines[nSkip], 1, maxChar)[[1]], split = " ")[[1]]
+  tmp <- tmp[which(tmp != "")]
+  out[[1]] <- as.numeric(tmp[c(-1,-2)])
+  
+  itm <- 1
+  for (i in iln) {
+    if (!quiet)
+      print(itm)
+    tmp <- strsplit(substr(allLines[i], 1, maxChar)[[1]], split = " ")[[1]]
+    tmp <- tmp[which(tmp != "")]
+    timedf[itm,] <- as.numeric(strsplit( substr(tmp[1],1,10), "/")[[1]])[c(3,1,2)]
+    H[,1] <- as.numeric(tmp[-1])
+    for (j in 2:nLay) {
+      tmp <- strsplit(substr(allLines[i+j-1], 1, maxChar)[[1]], split = " ")[[1]]
+      tmp <- tmp[which(tmp != "")]
+      H[,j] <- as.numeric(tmp)
+    }
+    Hall[[itm]] <- H
+    H[,] = NA
+    itm <- itm + 1
+  }
+  out[[2]] <- timedf
+  out[[3]] <- Hall
+  return(out)
+}
+
+#' c2vsim.avHead 
+#' Calculates Average head values for selected time period
+#'
+#' @param HeadList This is list of head. It is the third element of the output list from the 
+#' c2vsim.readHeadALL function
+#' @param ids the ids of the months to consider in the averaging calculations
+#'
+#' @return A matrix [nNodes x nLay] with the average Head values
+#' @export
+#'
+#' @examples
+c2vsim.avHead <- function(HeadList, ids){
+  Hav <- HeadList[[1]]
+  Hav[,] <- 0
+  
+  for (i in ids) {
+    Hav <- Hav + HeadList[[i]]
+  }
+  return(Hav/length(ids))
+}
+
+c2vsim.calcVelocityField <- function(Head, XY, MSH, K, POR){
+  
+}
+
+c2vsim.units.m2ft <- function(){
+  return(3.280839895)
+}
+
+c2vsim.units.ft2m <- function(){
+  return(1/c2vsim.units.m2ft())
 }

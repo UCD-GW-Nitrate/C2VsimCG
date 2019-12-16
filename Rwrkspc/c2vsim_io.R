@@ -648,3 +648,62 @@ c2vsim.units.m2ft <- function(){
 c2vsim.units.ft2m <- function(){
   return(1/c2vsim.units.m2ft())
 }
+
+
+#' c2vsim.read.LandUse
+#' Reads the land use time series. For the IWFM version 3 it reads the CVland use. 
+#' For the IWFM 15 it reads the files that have the _area suffix.
+#' The default values correspond to the coarse grid case version 3
+#'
+#' @param filename The name of the file to read
+#' @param NtimeSteps The number of time steps in the file
+#' @param Nelem The number of elements
+#' @param Ninfo The number of columns to read
+#' @param Nskip The number of lines to skip before the timeseries
+#' @param maxChar The number of characters to read for each line
+#' 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+c2vsim.read.LandUse <- function(filename, NtimeSteps = 88, Nelem = 1392, Ninfo = 5, colNames = NA, Nskip = 95, maxChar = 1000){
+  if (is.na(colNames)){
+    colNames = paste0("V", c(1:5))
+  }
+  # Prepare output data
+  dataOut = vector(mode = "list", length = NtimeSteps)
+  outALL = vector(mode = "list", length = 2)
+  # Allocate for dates
+  timedf <- data.frame(matrix(data = NA, nrow = NtimeSteps, ncol = 3), row.names = NULL)
+  colnames(timedf) <- c("Y", "M", "D")
+  
+  # Read the entire file
+  allLines <- readLines(filename)
+  cnt_ln <- Nskip + 1
+  
+  for (i in 1:NtimeSteps) {
+    
+    tmp <- strsplit(substr(allLines[cnt_ln], 1, maxChar)[[1]], " ")[[1]]
+    tmp <- tmp[which(tmp != "")]
+    print(tmp)
+    
+    timedf[i,] <- as.numeric(strsplit( substr(tmp[1],1,10), "/")[[1]])[c(3,1,2)]
+    df <- data.frame(matrix(data = NA, nrow = Nelem, ncol = Ninfo), row.names = NULL)
+    colnames(df) <-colNames
+    df[1,] <- as.numeric(tmp[-1])
+    cnt_ln <- cnt_ln + 1
+    for (j in 2:Nelem) {
+      tmp <- strsplit(substr(allLines[cnt_ln], 1, maxChar)[[1]], " ")[[1]]
+      tmp <- tmp[which(tmp != "")]
+      df[j,] <- as.numeric(tmp)
+      cnt_ln <- cnt_ln + 1
+    }
+    
+    dataOut[[i]] <- df
+  }
+  outALL[[1]] <- timedf
+  outALL[[2]] <- dataOut
+  return(outALL)
+}
+

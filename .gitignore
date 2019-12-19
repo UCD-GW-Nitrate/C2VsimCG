@@ -17,6 +17,7 @@
 /Rwrkspc/*
 !/Rwrkspc/*.R
 !/Rwrkspc/*.Rproj
+!/Rwrkspc/*.csv
 #
 !/OptimResults
 /OptimResults/*

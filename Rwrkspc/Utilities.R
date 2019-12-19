@@ -46,3 +46,14 @@ calcCentroid <- function (coords){
   
   return(apply(coords,2,sum)/dim(coords)[1])
 }
+
+
+# library(stringr)
+extractCommonRoot <- function(str1, str2){
+  n <- min(c(str_length(str1), str_length(str2)))
+  for (i in 1:n) {
+    if (substr(str1,1,i) != substr(str2,1,i))
+      break
+  }
+  return(substr(str1,1,i-1))
+}

@@ -137,6 +137,33 @@ canalNodes <- rbind(canalNodes, c(39.538, -121.679))
 canalNames <- c(canalNames, "Whiskeytown and Shasta")
 canalNodes <- rbind(canalNodes, c(40.631, -122.477))
 
+# Make a unique list of diversions that are accosiated with river nodes ---------
+diversionRiverNodes <- unique(divSpec[[2]][,2])
+diversionRiverNodes <- diversionRiverNodes[-which(diversionRiverNodes == 0)]
+uDivCoords <- matrix(data = NA, nrow = length(diversionRiverNodes), ncol = 2)
+uDivNames <- vector(mode = "list", length = length(diversionRiverNodes))
+uDivElem <- vector(mode = "list", length = length(diversionRiverNodes))
+
+for (i in 1:length(diversionRiverNodes)) {
+  # assign the coordinates of the river node
+  uDivCoords[i,] <- as.numeric(slot(rivernodes_4326, "coords")[diversionRiverNodes[i], c(2,1)])
+  
+  # find how many diversion exists from this river node
+  ii <- which(divSpec[[2]][,2] == diversionRiverNodes[i])
+  # Find a common name for those diversions
+  divname <- divSpec[[7]][ii[1]]
+  elemIds <- divSpec[[3]][ii[1]][[1]][,1]
+  if (length(ii)>1){
+    for (j in 2:length(ii)) {
+      elemIds <- c(elemIds, divSpec[[3]][ii[j]][[1]][,1])
+      divname <- extractCommonRoot(divname, divSpec[[7]][ii[j]])
+    }
+  }
+  uDivNames[[i]] <- divname
+  uDivElem[[i]] <- unique(elemIds)
+}
+
+# 
 
 # Make a list of unique diversions based on name --------------------------
 unique_names = c()

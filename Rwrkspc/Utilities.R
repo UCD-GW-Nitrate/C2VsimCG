@@ -57,3 +57,17 @@ extractCommonRoot <- function(str1, str2){
   }
   return(substr(str1,1,i-1))
 }
+
+readHistogramLine <- function(s){
+  s <- gsub("\"","", s)
+  s <- substr(s,2,nchar(s)-2)
+  s <- strsplit(s,",")
+  out <- vector(mode = "list", length = length(s[[1]]))
+  m <- matrix(data = NA, nrow = length(s[[1]]), ncol = 2)
+  for (i in 1:length(s[[1]])) {
+    t <- strsplit(s[[1]][i],":")
+    m[i,] <- as.numeric(t[[1]])
+  }
+ 
+  return(m)
+}

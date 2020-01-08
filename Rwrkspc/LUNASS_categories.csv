@@ -1,0 +1,135 @@
+0, Background,0
+1, Corn,1
+2, Cotton,2
+3, Rice,3
+4, Sorghum,4
+5, Soybeans,5
+6, Sunflower,6
+7, Peanuts,10
+8, Tobacco,11
+9, Sweet Corn,12
+10, Pop or Orn Corn,13
+11, Mint,14
+12, Barley,21
+13, Durum Wheat,22
+14, Spring Wheat,23
+15, Winter Wheat,24
+16, Other Small Grains,25
+17, Dbl Crop WinWht/Soybeans,26
+18, Rye,27
+19, Oats,28
+20, Millet,29
+21, Speltz,30
+22, Canola,31
+23, Flaxseed,32
+24, Safflower,33
+25, Rape Seed,34
+26, Mustard,35
+27, Alfalfa,36
+28, Other Hay/Non Alfalfa,37
+29, Camelina,38
+30, Buckwheat,39
+31, Sugarbeets,41
+32, Dry Beans,42
+33, Potatoes,43
+34, Other Crops,44
+35, Sugarcane,45
+36, Sweet Potatoes,46
+37, Misc Vegs &amp; Fruits,47
+38, Watermelons,48
+39, Onions,49
+40, Cucumbers,50
+41, Chick Peas,51
+42, Lentils,52
+43, Peas,53
+44, Tomatoes,54
+45, Caneberries,55
+46, Hops,56
+47, Herbs,57
+48, Clover/Wildflowers,58
+49, Sod/Grass Seed,59
+50, Switchgrass,60
+51, Fallow/Idle Cropland,61
+52, Forest,63
+53, Shrubland,64
+54, Barren,65
+55, Cherries,66
+56, Peaches,67
+57, Apples,68
+58, Grapes,69
+59, Christmas Trees,70
+60, Other Tree Crops,71
+61, Citrus,72
+62, Pecans,74
+63, Almonds,75
+64, Walnuts,76
+65, Pears,77
+66, Clouds/No Data,81
+67, Developed,82
+68, Water,83
+69, Wetlands,87
+70, Nonag/Undefined,88
+71, Aquaculture,92
+72, Open Water,111
+73, Perennial Ice/Snow,112
+74, Developed/Open Space,121
+75, Developed/Low Intensity,122
+76, Developed/Med Intensity,123
+77, Developed/High Intensity,124
+78, Barren,131
+79, Deciduous Forest,141
+80, Evergreen Forest,142
+81, Mixed Forest,143
+82, Shrubland,152
+83, Grassland/Pasture,176
+84, Woody Wetlands,190
+85, Herbaceous Wetlands,195
+86, Pistachios,204
+87, Triticale,205
+88, Carrots,206
+89, Asparagus,207
+90, Garlic,208
+91, Cantaloupes,209
+92, Prunes,210
+93, Olives,211
+94, Oranges,212
+95, Honeydew Melons,213
+96, Broccoli,214
+97, Peppers,216
+98, Pomegranates,217
+99, Nectarines,218
+100, Greens,219
+101, Plums,220
+102, Strawberries,221
+103, Squash,222
+104, Apricots,223
+105, Vetch,224
+106, Dbl Crop WinWht/Corn,225
+107, Dbl Crop Oats/Corn,226
+108, Lettuce,227
+109, Pumpkins,229
+110, Dbl Crop Lettuce/Durum Wht,230
+111, Dbl Crop Lettuce/Cantaloupe,231
+112, Dbl Crop Lettuce/Cotton,232
+113, Dbl Crop Lettuce/Barley,233
+114, Dbl Crop Durum Wht/Sorghum,234
+115, Dbl Crop Barley/Sorghum,235
+116, Dbl Crop WinWht/Sorghum,236
+117, Dbl Crop Barley/Corn,237
+118, Dbl Crop WinWht/Cotton,238
+119, Dbl Crop Soybeans/Cotton,239
+120, Dbl Crop Soybeans/Oats,240
+121, Dbl Crop Corn/Soybeans,241
+122, Blueberries,242
+123, Cabbage,243
+124, Cauliflower,244
+125, Celery,245
+126, Radishes,246
+127, Turnips,247
+128, Eggplants,248
+129, Gourds,249
+130, Cranberries,250
+131, NA,251
+132, NA,252
+133, NA,253
+134, Dbl Crop Barley/Soybeans,254

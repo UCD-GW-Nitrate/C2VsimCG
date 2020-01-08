@@ -584,8 +584,6 @@ c2vsim.readHeadALL <- function(filename, nNode = 30179, nLay = 4, NtimeSteps = 5
   allLines <- readLines(filename)
   # allocate memory for head data for one time step
   H <- matrix(data = NA, nrow = nNode, ncol = nLay)
-  # get the indices of the first laye with the time stamp
-  iln <- seq(nSkip+1, length(allLines), nLay)
   # Specify the maximum number of characters to read from each line
   maxChar <- nNode*13 + 25
   
@@ -594,22 +592,33 @@ c2vsim.readHeadALL <- function(filename, nNode = 30179, nLay = 4, NtimeSteps = 5
   tmp <- tmp[which(tmp != "")]
   out[[1]] <- as.numeric(tmp[c(-1,-2)])
   
+  iln <- nSkip+1
   itm <- 1
-  for (i in iln) {
-    if (!quiet)
-      print(itm)
-    tmp <- strsplit(substr(allLines[i], 1, maxChar)[[1]], split = " ")[[1]]
+  while(T){
+    tmp <- strsplit(substr(allLines[iln], 1, maxChar)[[1]], split = " ")[[1]]
+    if (length(tmp) == 0){
+      iln <- iln + 1
+      next
+    }
     tmp <- tmp[which(tmp != "")]
+    if (!quiet){
+      print(tmp[1])
+    }
     timedf[itm,] <- as.numeric(strsplit( substr(tmp[1],1,10), "/")[[1]])[c(3,1,2)]
     H[,1] <- as.numeric(tmp[-1])
     for (j in 2:nLay) {
-      tmp <- strsplit(substr(allLines[i+j-1], 1, maxChar)[[1]], split = " ")[[1]]
+      iln <- iln + 1
+      tmp <- strsplit(substr(allLines[iln], 1, maxChar)[[1]], split = " ")[[1]]
       tmp <- tmp[which(tmp != "")]
       H[,j] <- as.numeric(tmp)
     }
     Hall[[itm]] <- H
     H[,] = NA
-    itm <- itm + 1
+    itm <- itm + 1  
+    iln <- iln + 1
+    if (itm > NtimeSteps || iln > length(allLines)){
+      break
+    }
   }
   out[[2]] <- timedf
   out[[3]] <- Hall

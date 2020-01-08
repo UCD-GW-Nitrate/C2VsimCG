@@ -90,5 +90,9 @@ write.table(cbind(XY[,2:3], (Zelev[,1] + Zelev[,2])/2, CVparam[[1]]$PKH), file =
 write.table(cbind(XY[,2:3], (Zelev[,2] + Zelev[,3])/2, CVparam[[2]]$PKH), file = "temp.dat", row.names = FALSE, col.names = FALSE ,append = TRUE)
 write.table(cbind(XY[,2:3], (Zelev[,3] + Zelev[,4])/2, CVparam[[3]]$PKH), file = "temp.dat", row.names = FALSE, col.names = FALSE ,append = TRUE)
 
+# Calculate Water Table depth ------------------------
+# Read the node coordinates, mesh and ground surface elevation from the snippets above
 
+headAll <- c2vsim.readHeadALL(filename = paste0(c2vsim.path, "Results/CVGWheadall.out"),
+                              nNode =  dim(XY)[1],nLay = 3,NtimeSteps = 1056, nSkip = 6, quiet = F)
 

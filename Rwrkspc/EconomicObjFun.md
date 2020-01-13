@@ -19,7 +19,8 @@ Next we get a list of all elements that have prices for that davis class. We dis
 <br /> 3. There is only one or no element in sort distance with price. Then we use the element which is closer to the current element.
 We computed the area weighted average for each element.
 
-
+## Results
+Preliminary results can be found at https://bit.ly/35OxMhq
 
 #### Clarifications
 - Which NASS year to choose?

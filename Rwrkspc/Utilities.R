@@ -71,3 +71,19 @@ readHistogramLine <- function(s){
  
   return(m)
 }
+
+color_elem_price <- function(price, min_price, max_price){
+  if (price > max_price){
+    return (paste0('#',paste(as.hexmode(c(127,0,0)),collapse = '')))
+  }
+  
+  if (price < min_price){
+    return (paste0('#',paste(as.hexmode(c(255,247,236)),collapse = '')))
+  }
+  
+  u = (price - min_price)/(max_price - min_price)
+  r = round(255*(1-u) + 215*u)
+  g = round(247*(1-u) + 48*u)
+  b = round(236*(1-u) + 31*u)
+  return (paste0('#',paste(as.hexmode(c(r,g,b)),collapse = '')))
+}

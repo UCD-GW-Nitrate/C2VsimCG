@@ -1,4 +1,5 @@
 library("rgdal")
+library(stringr)
 source("c2vsim_io.R")
 # Read the diversion specification data
 divSpec <- c2vsim.readDivSpec(filename = "../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdivspec.dat")
@@ -141,12 +142,14 @@ canalNodes <- rbind(canalNodes, c(40.631, -122.477))
 diversionRiverNodes <- unique(divSpec[[2]][,2])
 diversionRiverNodes <- diversionRiverNodes[-which(diversionRiverNodes == 0)]
 uDivCoords <- matrix(data = NA, nrow = length(diversionRiverNodes), ncol = 2)
-uDivNames <- vector(mode = "list", length = length(diversionRiverNodes))
+#uDivNames <- vector(mode = "list", length = length(diversionRiverNodes))
+uDivNames <- c()
 uDivElem <- vector(mode = "list", length = length(diversionRiverNodes))
 
 for (i in 1:length(diversionRiverNodes)) {
   # assign the coordinates of the river node
-  uDivCoords[i,] <- as.numeric(slot(rivernodes_4326, "coords")[diversionRiverNodes[i], c(2,1)])
+  ind <- which(rivernodes_4326$IRV == diversionRiverNodes[i])
+  uDivCoords[i,] <- as.numeric(slot(rivernodes_4326, "coords")[ind, c(2,1)])
   
   # find how many diversion exists from this river node
   ii <- which(divSpec[[2]][,2] == diversionRiverNodes[i])
@@ -156,77 +159,48 @@ for (i in 1:length(diversionRiverNodes)) {
   if (length(ii)>1){
     for (j in 2:length(ii)) {
       elemIds <- c(elemIds, divSpec[[3]][ii[j]][[1]][,1])
-      divname <- extractCommonRoot(divname, divSpec[[7]][ii[j]])
+      divname <- paste0(divname, "</br>", divSpec[[7]][ii[j]])
+      #divname <- extractCommonRoot(divname, divSpec[[7]][ii[j]])
     }
   }
-  uDivNames[[i]] <- divname
+  #uDivNames[[i]] <- divname
+  uDivNames <- c(uDivNames, divname)
   uDivElem[[i]] <- unique(elemIds)
 }
 
-# 
-
-# Make a list of unique diversions based on name --------------------------
-unique_names = c()
-for (i in 1:dim(divSpec[[2]])[1]) {
+# Append the diversions that have no river node associated --------------------------
+# List find the elements that receive diversion from the 0 river nodes
+canalElem <- vector(mode = "list", length = length(canalNames))
+for (i in 1:dim(divSpec[[2]])[1]){
   if (divSpec[[2]][i,2] == 0){
-    pr <- TRUE
-    for (j in 1:length(canalNames)) {
+    not_found <- T
+    for (j in 1:length(canalNames)){
       nstr <- nchar(canalNames[j])
       if (substr(divSpec[[7]][i], 1, nstr) == canalNames[j]){
-        unique_names <- c(unique_names, canalNames[j])
-        pr <- FALSE
+        canalElem[[j]] <- unique(c(canalElem[[j]], divSpec[[3]][[i]][,1]))
+        not_found <- F
         break
       }
     }
-    if (pr)
+    if(not_found)
       print(i)
   }
-  else{
-    unique_names <- c(unique_names, divSpec[[7]][i])
-  }
 }
 
-unique_names <- levels(factor(unique_names))
-
-
-# Make a list of element for each diversion name --------------------------
-uDivCoords <- matrix(data = NA, nrow = length(unique_names), ncol = 2)
-uDivElem <- vector(mode = "list", length = length(unique_names))
-type <- vector(mode = "numeric", length = length(unique_names))
-
-for (i in 1:dim(divSpec[[2]])[1]) {
-  if (divSpec[[2]][i, 2] != 0){
-    id <- which(unique_names == divSpec[[7]][i])
-    uDivCoords[id,] <- as.numeric(slot(rivernodes_4326, "coords")[divSpec[[2]][i,2], c(2,1)])
-    uDivElem[[id]] <- divSpec[[3]][i][[1]][,1]
-    type[id] <- 1
-  }
-  else{
-    # find which of the unique name containts part of this
-    for (j in 1:length(unique_names)) {
-      nstr <- nchar(unique_names[j])
-      if (substr(divSpec[[7]][i], 1, nstr) == unique_names[j]){
-        id_cn <- which(canalNames == unique_names[j])
-        uDivCoords[j, ] <- canalNodes[id_cn,]
-        uDivElem[[j]] <- c(uDivElem[[j]], divSpec[[3]][i][[1]][,1])
-        type[j] <- 2
-        break
-      }
-    }
-  }
-}
-
-
+AllNames <- c(uDivNames,canalNames)
+AllCoords <- rbind(uDivCoords, canalNodes)
+AllElem <- c(uDivElem, canalElem)
+type <- c(rep(1,length(uDivNames)), rep(2,length(canalNames)))
 
 # Write diversion nodes as js file ---------------------------------------------
 filename = "../js_scripts/C2vsimDiversions.js"
 cat("var C2VsimDivs = [\n", file = filename)
-for (i in 1:length(unique_names)) {
-  xy <- uDivCoords[i,]
+for (i in 1:length(AllNames)) {
+  xy <- AllCoords[i,]
   
-  tmp <- paste0("\t{ point: [", xy[1], ", ", xy[2], "], type: ", type[i], ", name: '", gsub("'", "", unique_names[i]), "', elids: [")
+  tmp <- paste0("\t{ point: [", xy[1], ", ", xy[2], "], type: ", type[i], ", name: '", gsub("'", "", AllNames[i]), "', elids: [")
   
-  tmp <- paste0(tmp, toString (uDivElem[[i]]), "]},\n")
+  tmp <- paste0(tmp, toString (AllElem[[i]]), "]},\n")
   cat(tmp , sep = "",  file = filename, append = TRUE)
 }
 cat("];", file = filename, append = TRUE)
@@ -240,9 +214,12 @@ filename = "../js_scripts/c2vsimMesh.js"
 cat("var c2vsimMesh = [\n", file = filename)
 
 for (i in 1:length(c2vsim_mesh_4326)) {
+  clr_elem <- color_elem_price(elem_price[i]/1000000, 2.5, 1000)
+
   coords <- shapefile.coords(c2vsim_mesh_4326, i)
   coords <- coords[-dim(coords)[1],]
-  tmp <- paste0("\t{ id:", c2vsim_mesh_4326$IE[i], ", Polygon: [")
+
+  tmp <- paste0("\t{ id:", c2vsim_mesh_4326$IE[i], ",color:'", clr_elem,  "', cost:", elem_price[i]/1000000,  ", Polygon: [")
   for (j in 1:dim(coords)[1]) {
     tmp <- paste0(tmp, "[", coords[j,2], ", ", coords[j,1], "]")
     if (j < dim(coords)[1])
@@ -271,9 +248,11 @@ cat("var div_polys = [\n", file = filename)
 for (i in 1:length(div_polys)) {
   if (div_polys[i] == 0)
     next
+  clr_elem <- color_elem_price(elem_price[div_polys[i]]/1000000, 2.5, 1000)
+  
   coords <- shapefile.coords(c2vsim_mesh_4326, div_polys[i])
   coords <- coords[-dim(coords)[1],]
-  tmp <- paste0("\t{ id:", c2vsim_mesh_4326$IE[div_polys[i]], ", Polygon: [")
+  tmp <- paste0("\t{ id:", c2vsim_mesh_4326$IE[div_polys[i]], ",color:'", clr_elem,  "', cost: ", elem_price[div_polys[i]]/1000000,  ", Polygon: [")
   for (j in 1:dim(coords)[1]) {
     tmp <- paste0(tmp, "[", coords[j,2], ", ", coords[j,1], "]")
     if (j < dim(coords)[1])
@@ -284,3 +263,5 @@ for (i in 1:length(div_polys)) {
   
 }
 cat("];", file = filename, append = TRUE)
+
+

@@ -45,7 +45,10 @@
 
         <script>
             var divElements = new Array();
-
+            var AllElements = L.layerGroup();
+            var diversionElements = L.layerGroup();
+            var Rivers = L.layerGroup();
+            var DiversionNodes = L.layerGroup();
 
             var mymap = L.map('mapid').setView([37.7, -120.5], 8);
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -55,14 +58,24 @@
                 accessToken: 'pk.eyJ1IjoiZ2lvcmdrIiwiYSI6ImNqc3h4Zmc3MjBqcmg0OXF4Y2E4Z3VwazMifQ.AIQu1J0MjGvQJ-B4KM5XHw'
             }).addTo(mymap)
 
-            for(i = 0; i < div_polys.length; i++){
-                L.polygon(div_polys[i].Polygon, 
-                {color: div_polys[i].color, opacity: 0., weight: 2, fillOpacity: 1.25})
-                .addTo(mymap);
+            // Add all mesh polygons coloured by price 
+            for(i = 0; i < c2vsimMesh.length; i++){
+                L.polygon(c2vsimMesh[i].Polygon, 
+                {color: c2vsimMesh[i].color, opacity: 0., weight: 2, fillOpacity: 1.25}).bindPopup('$'+ c2vsimMesh[i].cost.toFixed(2) + 'M')
+                .addTo(AllElements);
             }
 
-            L.geoJSON(c2vsim_rivers).addTo(mymap);
+            //Add the polygons that recieve diversions only
+            for(i = 0; i < div_polys.length; i++){
+                L.polygon(div_polys[i].Polygon, 
+                {color: div_polys[i].color, opacity: 0., weight: 2, fillOpacity: 1.25}).bindPopup('$'+ div_polys[i].cost.toFixed(2) + 'M')
+                .addTo(diversionElements);
+            }
 
+            // Add the rivers
+            L.geoJSON(c2vsim_rivers).addTo(Rivers);
+
+            // What happens when we click on a diversion node
             function onClick(e) {
                 for (i = 0; i < divElements.length; i++){
                     divElements[i].remove();
@@ -74,25 +87,35 @@
                     continue;
                     //console.log(i)
                     console.log(e.target.options.elids[i])
-                    divElements.push(L.polygon(c2vsimMesh[e.target.options.elids[i]-1].Polygon, {color: '#cb181d', weight: 2, fillOpacity: 0.05}).addTo(mymap));
+                    divElements.push(L.polygon(c2vsimMesh[e.target.options.elids[i]-1].Polygon, {color: '#023858', weight: 2, fillOpacity: 0.05}).addTo(mymap));
                 }
             }
 
+            // Add the diversion nodes
             var clr;
             for (i = 0; i < C2VsimDivs.length; i++){
                 if (C2VsimDivs[i].type == 1)
-                    clr = '#1a9641';
+                    clr = '#045a8d';
                 else if (C2VsimDivs[i].type == 2)
-                    clr = '#d7191c';
+                    clr = '#006d2c';
 
                 L.circle(C2VsimDivs[i].point, 
-                    {color: clr, fillColor: clr, opacity: 0.1, weight: 2, fillOpacity: 0.5, radius: 2000, elids: C2VsimDivs[i].elids })
+                    {color: clr, fillColor: clr, opacity: 0.9, weight: 2, fillOpacity: 0.1, radius: 2000, elids: C2VsimDivs[i].elids })
                     .bindPopup(C2VsimDivs[i].name)
                     .on('click', onClick)
-                    .addTo(mymap);
+                    .addTo(DiversionNodes);
 
                 //L.circle(C2VsimDivs[i].point, {color: clr, fillColor: clr, opacity: 0.1, weight: 2, fillOpacity: 0.5, radius: 2000}).bindPopup(C2VsimDivs[i].name).addTo(mymap);  
             }
+
+            var overlays = {
+                "All Elements": AllElements,
+                "Diversion Elements": diversionElements,
+                "Rivers": Rivers,
+                "Diversion Nodes": DiversionNodes
+            }
+
+            L.control.layers({},overlays,{collapsed:false}).addTo(mymap);
 
         </script>
     </body>

@@ -85,13 +85,22 @@ c2vsim.readMesh <- function(filename, NE = 1392, Nskip = 93, Ncols = 5){
 #'
 #' Then you can access the data as for example to plot the Ending storage of the third subregion:
 #' plot(GWB[[3]]$ES)
-c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056){
+c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056, CG = T){
+  if (length(Nskip) == 1){
+    Nskip <- rep(Nskip, Nsub)
+  }
+  if (CG){
+    fieldnames <- c("Time","DP", "BS", "ES", "NDP", "GFS", "R", "GFL", "BI", "S", "SI", "TDO", "P", "NSI", "D", "CS")
+  }
+  else{
+    fieldnames <- c("Time","P", "BS", "ES", "DP", "GFS", "R", "GFL", "BI", "S", "SI", "TDO", "PMP", "ORZ", "NSI", "D", "CS")
+  }
   GWBList <- vector(mode = "list", length = Nsub)
   for (i in 1:Nsub) {
     GWB <- read.table(file =  filename, 
-                      header = FALSE, sep = "", skip = Nskip + (i-1)*(NtimeSteps+Nskip+1) , nrows = NtimeSteps,
+                      header = FALSE, sep = "", skip = Nskip[1] + (i-1)*(NtimeSteps+Nskip[i]+1) , nrows = NtimeSteps,
                       quote = "",fill = TRUE,
-                      col.names = c("Time","DP", "BS", "ES", "NDP", "GFS", "R", "GFL", "BI", "S", "SI", "TDO", "P", "NSI", "D", "CS"))
+                      col.names = fieldnames)
     GWBList[[i]] <- GWB
   }
   return(GWBList)

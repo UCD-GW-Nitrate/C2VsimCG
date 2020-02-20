@@ -2,7 +2,7 @@ In this folder you can find the optimization results.
 
 Maximize water table rise and minimize application area
 -------
-This is the first optimization run that was used mainly for setting up and debbuging the tools.
+This is the first optimization run that was used mainly for setting up and debugging the tools.
 
 We choose three diversion nodes 
 1. river node 1: Kern river
@@ -17,4 +17,8 @@ The first objective is to minimize the area.
 The secod objective is to maximize the water level rise.
 For the second objective we sum the (scenario - base) x weight head values for all C2Vsim nodes and all time periods. The simulation period is 1965 - 2009 with monthly step.
 To encourage spatialy distributed water level rise (WLR) each meter of WLR was weighted a different value starting from 1 and reduced by 0.9.
+
+Maximize water table rise and minimize economic function
+-----
+See more in the [doc](https://docs.google.com/document/d/1Xi7sIJpClBnmReKCn29z5NyYD2TD6HZjReKJbJQLqig/)
   

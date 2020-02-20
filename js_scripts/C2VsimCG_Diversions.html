@@ -66,7 +66,7 @@
                 .addTo(AllElements);
             }
 
-            //Add the polygons that recieve diversions only
+            //Add the polygons that receive diversions only
             for(i = 0; i < div_polys.length; i++){
                 L.polygon(div_polys[i].Polygon, 
                 {color: div_polys[i].color, opacity: 0., weight: 2, fillOpacity: 1.25}).bindPopup('$'+ div_polys[i].cost.toFixed(2) + 'M')

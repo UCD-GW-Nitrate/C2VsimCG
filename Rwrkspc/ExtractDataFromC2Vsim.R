@@ -96,3 +96,7 @@ write.table(cbind(XY[,2:3], (Zelev[,3] + Zelev[,4])/2, CVparam[[3]]$PKH), file =
 headAll <- c2vsim.readHeadALL(filename = paste0(c2vsim.path, "Results/CVGWheadall.out"),
                               nNode =  dim(XY)[1],nLay = 3,NtimeSteps = 1056, nSkip = 6, quiet = F)
 
+# Read the Groundwater Budget and save the storage
+GWBUDbase <- c2vsim.readGWBUD("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Results/CVground.BUD", NtimeSteps = 1056)
+cumGWBUD_CG <- c2vsim.cumGWBUD(GWBUDbase)
+save(cumGWBUD_CG, file = "cumul_GWBUD_base.RData")

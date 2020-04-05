@@ -70,18 +70,20 @@ for (i in 1:length(riverNodeList)){
   }
 }
 
-prc_tl <- 90
+prc_tl <- 95
 if (prc_tl == 95) {iprc <- c(seq(2,17,2))} # 95
 if (prc_tl == 90) {iprc <- c(seq(3,17,2))} # 90
-tempdf <- DiversionTimeSeriesTAF[1:1056,-iprc]# 528:1056
+tempdf <- DiversionTimeSeriesTAF[528:1056,-iprc]# 528:1056
 cumtempdf <- apply(tempdf[,-1], 2, cumsum)
 
 p <- plot_ly(tempdf)
 for (i in 1:(dim(tempdf)[2]-1)) {
-  p <- add_trace(p, x = ~Time, y = cumtempdf[,i],  type = 'scatter', mode = 'lines', name = riverNodeName[i],
+  p <- add_trace(p, x = ~Time, y = cumtempdf[,i]/1000,  type = 'scatter', mode = 'lines', name = riverNodeName[i],
                  line = list(color = riverNodeColors[i], width = 4, dash = 'solid'))
 }
-p
+p %>%
+  layout(title = "5% and 1% from Delta",xaxis = list(title = "Time"), yaxis = list(title = "Requested diversion [MAF]"))
+  
 
 # ---- write the diversion Time series file
 dtsFile <- paste0('../OptimResults/inputFiles/divTimeSeries_JAN20_', prc_tl ,'.dat')

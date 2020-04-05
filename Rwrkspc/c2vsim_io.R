@@ -61,13 +61,16 @@ c2vsim.readMesh <- function(filename, NE = 1392, Nskip = 93, Ncols = 5){
 #'
 #' @param filename is the filename
 #' @param Nsub the number of subregions printed in the file
-#' @param Nskip is the number of line between the subregion tables. In fact this
+#' @param Nskip is the number of lines between the subregion tables. In fact this
 #'   number corresponds to the number of lines from the first up to the second
 #'   dashed line. Between the subregions there is an extra empty line that is
 #'   added to the Nskip. Therefore before reading files make sure that this is
 #'   tha case as this can change other versions
 #' @param NtimeSteps is the number of time steps used in the simulation. By
 #'   default is set to 1056
+#'   
+#' @param CG set this to true when reading from coarse grid version. 
+#'   set it False when reading from fine grid
 #'
 #' @return Returns a list of size Nsub data frames with the budget time series.
 #'   The columns in the data frame are the following: DP: Deep Percolation BS:
@@ -85,7 +88,7 @@ c2vsim.readMesh <- function(filename, NE = 1392, Nskip = 93, Ncols = 5){
 #'
 #' Then you can access the data as for example to plot the Ending storage of the third subregion:
 #' plot(GWB[[3]]$ES)
-c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056, CG = T){
+c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056, CG = T, offset = 0){
   if (length(Nskip) == 1){
     Nskip <- rep(Nskip, Nsub)
   }

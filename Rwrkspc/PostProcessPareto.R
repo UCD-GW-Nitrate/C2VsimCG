@@ -1,22 +1,35 @@
 library("lubridate")
 library("pracma")
 library("rgdal")
-source('~/GitHub/nsgaii/Rnsgaii/nsgaii_io.R')
+source('../../nsgaii/Rnsgaii/nsgaii_io.R')
 source("c2vsim_io.R")
 
 #fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
-fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_63246.dat"
+#fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_63246.dat"
+fl1 <- "../OptimResults/JAN_20/pS_JAN20_95_71313.dat"
+fl2 <- "../OptimResults/JAN_20/pH_JAN20_95_71313.dat"
 ps <- nsgaii.readParetoSolution(fl1)
+
+# plot Hyper Volume evolution
+phist <- nsgaii.readParetoHistory(filename = fl2, nGen = 1000)
+HV <- vector(mode = "numeric", length = length(phist))
+refPoint <- c(-1100000/100000, 110000/10000)
+for (i in 1:length(phist)) {
+  HV[i] <- nsgaii.calculateHyperVolume(cbind(phist[[i]][,1]/100000, phist[[i]][,2]/10000), refPoint)
+}  
+
+plot(HV)
 
 # Read the element ids that were used in the optimization =================
 # 
-nDivPoints <- scan(file = "../RunC2Vsim/divElem.dat", skip = 0, n = 1)
+divElemFile <- "../OptimResults/inputFiles/divElem_JAN20.dat"
+nDivPoints <- scan(file = divElemFile, skip = 0, n = 1)
 
 divelem <- c()
 divNodeId <- c()
 divelem_perNode <- vector(mode = "list", length = 3)
 for (i in 1:nDivPoints) {
-  temp <- scan(file = "../RunC2Vsim/divElem.dat", skip = i, nlines = 1)
+  temp <- scan(file = divElemFile, skip = i, nlines = 1)
   divelem <-  c(divelem, temp[-1:-2])
   divNodeId <- c(divNodeId, vector(mode = "numeric", length = length(temp[-1:-2])) + temp[1])
   divelem_perNode[[i]] <- temp[-1:-2]
@@ -25,34 +38,39 @@ for (i in 1:nDivPoints) {
 
 # Read the shapefile that contain the diversion polygons ============
 # 
-diversion_polygons <- readOGR(dsn = "../gis_data/diversionElements.shp")
+#diversion_polygons <- readOGR(dsn = "../gis_data/diversionElements.shp")
+#diversion_polygons4326 <- spTransform(diversion_polygons, CRS("+init=epsg:4326"))
+diversion_polygons <- readOGR(dsn = "../gis_data", layer ="Feb2020_div_nodes")
 diversion_polygons4326 <- spTransform(diversion_polygons, CRS("+init=epsg:4326"))
-
 
 # Write them as javascript variable================
 # 
+candidate_polys_file <- "../js_scripts/all_candidate_polys_JAN20.js"
 # # This containts the element ids in the order they are printed in the following js file
 tempv <- vector(mode = "numeric", length = 0) 
-cat("var all_candidate_polys = [\n", file = "../js_scripts/all_candidate_polys.js")
+cat("var all_candidate_polys = [\n", file = candidate_polys_file)
 for (i in 1:length(diversion_polygons$IE)) {
-  if (is.na(diversion_polygons$DivNode[i])){
+  #if (is.na(diversion_polygons$DivNode[i])){
+  #  next
+  #}
+  if (diversion_polygons$divID[i] == 0){
     next
   }
   tempv <- c(tempv,diversion_polygons$IE[i])
-  poly <- slot(slot(slot(diversion_polygons4326, "polygons")[[i]], "Polygons")[[1]], "coords")
-  cat("\t{ id: ", diversion_polygons$IE[i], ", DivND: ", diversion_polygons$DivNode[i], file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
-  cat(", Polygon: [", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+  poly <- diversion_polygons4326@polygons[[i]]@Polygons[[1]]@coords
+  cat("\t{ id: ", diversion_polygons$IE[i], ", DivND: ", diversion_polygons$divID[i], file = candidate_polys_file, sep = "", append = TRUE)
+  cat(", Polygon: [", file = candidate_polys_file, sep = "", append = TRUE)
   for (j in 1:(dim(poly)[1]-1)) {
-    cat("[", poly[j,2], ",", poly[j,1], "]", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+    cat("[", poly[j,2], ",", poly[j,1], "]", file = candidate_polys_file, sep = "", append = TRUE)
     if (j != dim(poly)[1]-1)
-      cat(",", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+      cat(",", file = candidate_polys_file, sep = "", append = TRUE)
   }
   if (i != length(diversion_polygons$IE))
-    cat("]", "},\n", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+    cat("]", "},\n", file = candidate_polys_file, sep = "", append = TRUE)
   else
-    cat("]", "}\n", file = "../js_scripts/all_candidate_polys.js", sep = "", append = TRUE)
+    cat("]", "}\n", file = candidate_polys_file, sep = "", append = TRUE)
 }
-cat("];", file = "../js_scripts/all_candidate_polys.js", append = TRUE)
+cat("];", file = candidate_polys_file, append = TRUE)
 
 
 
@@ -61,7 +79,8 @@ cat("];", file = "../js_scripts/all_candidate_polys.js", append = TRUE)
 #  with the following fields:
 # id, x (objective 1), y (objective 2), idLand (an array with the polygon ids)
 ## write Pareto solution as javascript variable
-js_file <- "../js_scripts/paretoSolutions_63246.js"
+#js_file <- "../js_scripts/paretoSolutions_63246.js"
+js_file <- "../js_scripts/pS_JAN20_95_71313.js"
 cat("var paretoPoints = [\n", file = js_file)
 for (i in 1:dim(ps[[2]])[1]) {
   cat("\t{ id: ", i, ", x: ", ps[[2]][i,2], ", y: ", -ps[[2]][i,1], sep = "",  file = js_file, append = TRUE)
@@ -90,7 +109,8 @@ cat("];", file = js_file, append = TRUE)
 
 # Read the Diversion Time Series file ===========================
 # 
-fileDTS <- "../RunC2Vsim/divTimeSeries.dat"
+# fileDTS <- "../RunC2Vsim/divTimeSeries.dat"
+fileDTS <- "../OptimResults/inputFiles/divTimeSeries_JAN20_95.dat"
 info <- scan(file = fileDTS, skip = 0, n = 2)
 dts.data <- matrix(nrow = info[2], ncol = info[1])
 dts.id <- vector(mode = "numeric",  length = info[1])
@@ -102,15 +122,21 @@ for (i in 1:info[1]) {
 }
 
 ## hand write the diversion coordinates. Normally we would get this information from the river file
-dts.points <- matrix(nrow = 3, ncol = 2)
-dts.points[1,] <- c(35.440852, -118.933162)
-dts.points[2,] <- c(36.357291, -119.121089)
-dts.points[3,] <- c(36.784392, -119.414387)
-
+# dts.points <- matrix(nrow = 3, ncol = 2)
+# dts.points[1,] <- c(35.440852, -118.933162)
+# dts.points[2,] <- c(36.357291, -119.121089)
+# dts.points[3,] <- c(36.784392, -119.414387)
+river_nodes <- readOGR(dsn = "../gis_data", layer = "C2Vsim_riverNodes")
+river_nodes4326 <- spTransform(river_nodes, CRS("+init=epsg:4326"))
+dts.points <- matrix(nrow = length(dts.id), ncol = 2)
+for (i in 1:length(dts.id)) {
+  dts.points[i,] <- as.numeric(river_nodes4326@coords[which(river_nodes4326$IRV == dts.id[i]),c(2,1)]) 
+}
 
 
 # Write diversion Timeseries as javascript variable ========================
-js_DTS_file <- "../js_scripts/diversionTimeSeries.js"
+# js_DTS_file <- "../js_scripts/diversionTimeSeries.js"
+js_DTS_file <- "../js_scripts/DTS_JAN20_95.js"
 cat("var divNodes = [\n", file = js_DTS_file)
 
 sdateId = 528
@@ -220,29 +246,35 @@ for (i in seq(1,dim(ps[[2]])[1],1)) {
   c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = temp_divdata, NCOLDV = dim(temp_divdata)[2]-1)
   
   setwd("../RunC2Vsim")
+  #file.remove("Results/CVdiverdtl.bin","Results/CVground.bin", "Results/CVGWhyd.out","Results/CVSWhyd.out",
+  #            "Results/CVdiverdtl.BUD", "Results/CVground.BUD")
   system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Simulation3.02.exe CVsim.in")
   system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Budget3.02.exe CVBudget.in")
   
   # Read the result 
   GWBUD <- c2vsim.readGWBUD("Results/CVground.BUD", NtimeSteps = 528)
-  DivBUD <- c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528, nExpectedDivs = 249)
+  DivBUD <- c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528, nExpectedDivs = 253)
   SWHYD <- c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
   GWHYD <- c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
   psGWBUD[[i]] <- GWBUD
   psDVBUD[[i]] <- DivBUD
   psSWHYD[[i]] <- SWHYD
   psGWHYD[[i]] <- GWHYD
-  
+  file.remove("Results/CVdiverdtl.bin","Results/CVground.bin", "Results/CVGWhyd.out","Results/CVSWhyd.out",
+              "Results/CVdiverdtl.BUD", "Results/CVground.BUD")
   setwd(proj_dir)
 }
 
 #=========SAVE ALL RUN RESULTS===========
+# solutionfileBUD <- "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData"
+solutionfileBUD <- "../OptimResults/JAN_20/pS_JAN20_95_BUD_71313.RData"
+
 save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGWHYD,
-     file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData")
+     file = solutionfileBUD)
 
 
 # Load and Process Results ------------------------------------------------
-load(file = "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData")
+load(file = solutionfileBUD)
 
 
 # Compare pareto Groundwater storage and gain from stream against  --------
@@ -261,8 +293,10 @@ for (i in 1:length(psGWBUD)) {
 
 
 # Write Ending Storage  as javascript variables -------
-js_ES_file <- "../js_scripts/ES_63246.js"
-js_GFS_file <- "../js_scripts/GFS_63246.js"
+#js_ES_file <- "../js_scripts/ES_63246.js"
+#js_GFS_file <- "../js_scripts/GFS_63246.js"
+js_ES_file <- "../js_scripts/ES_JAN20_95_71313.js"
+js_GFS_file <- "../js_scripts/GFS_JAN20_95_71313.js"
 myfnc.writeTSMatrix2JS(js_ES_file, data = ES, varName = "ES", sy = 1965, sm = 10)
 myfnc.writeTSMatrix2JS(js_GFS_file, data = -GFS, varName = "GFS", sy = 1965, sm = 10)
 

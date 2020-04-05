@@ -73,6 +73,9 @@ readHistogramLine <- function(s){
 }
 
 color_elem_price <- function(price, min_price, max_price){
+  if(is.na(price)){
+    return (paste0('#',paste(as.hexmode(c(0,0,0)),collapse = '')))
+  }
   if (price > max_price){
     return (paste0('#',paste(as.hexmode(c(127,0,0)),collapse = '')))
   }

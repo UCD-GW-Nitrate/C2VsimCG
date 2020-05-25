@@ -1,22 +1,30 @@
 library(rgdal)
 library(plotly)
 library(gwtools)
+library(readxl)
 
 # ------------------------------
-# JAN20 input files
+# MAY20 input files
+# In this run we will remove the delta contribution to run a local scenario
+# See the PrepareInputFIles.R which is the parent script of this
+
+# Read the element prices
+IE_price <- read_xlsx('cv_land_price_022620.xlsx')
+# Remove the missing prices
+IE_price <- IE_price[-which(is.na(IE_price$pred_price_county_fe)),]
 
 # ElemInfo File
 # Runc first the code of the AssociateDiversionNodesElements.R script to create
 # the AllNames and AllElem variables
 # @@@@@@@@@@@@@@@@@@@@@@@@@
 c2vsim_mesh <- readOGR(dsn = "../gis_data/C2Vsim_mesh.shp")
-index_AllNames <- c(79, 81, 82, 80, 47, 77, 76, 60, 61, 62, 66, 67, 68, 69, 71, 72, 73)
-div_id <-         c( 1,  1,  1,  1,  1,  2,  3,  4,  4,  5,  6,  6,  7,  8,  3,  3,  3) # Delta->1, Friant->2, Local -> 3
+index_AllNames <- c(77, 76, 60, 61, 62, 66, 67, 68, 69, 71, 72, 73)
+div_id <-         c(2,  3,  4,  4,  5,  6,  6,  7,  8,  3,  3,  3) # Delta->1, Friant->2, Local -> 3
 elem_mesh_db <- c2vsim_mesh@data
 elem_mesh_db$divID <- vector(mode = "numeric", length = dim(elem_mesh_db)[1])
-riverNodeList <- c(419, 55, 5, 26, 29, 423, 427, 19)
-riverNodeName <- c("Delta", "Friant-Kern", "Kern", "Kings 1", "Kings 2", "Kaweah 1", "Kaweah 2", "Tule")
-riverNodeColors <- c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf')
+riverNodeList <- c(55, 5, 26, 29, 423, 427, 19)
+riverNodeName <- c("Friant-Kern", "Kern", "Kings 1", "Kings 2", "Kaweah 1", "Kaweah 2", "Tule")
+riverNodeColors <- c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628')
 
 for (i in seq(length(index_AllNames),1,-1)) {
   print(AllNames[index_AllNames[i]])
@@ -32,14 +40,18 @@ for (i in seq(length(index_AllNames),1,-1)) {
 
 c2vsim_mesh@data <- elem_mesh_db
 # write the shapefile
-writeOGR(obj = c2vsim_mesh, dsn = "../gis_data", layer = 'Feb2020_div_nodes', driver = ogrDrivers()$name[17])
+writeOGR(obj = c2vsim_mesh, dsn = "../gis_data", layer = 'MAY2020_local_div_nodes', driver = ogrDrivers()$name[17])
 
 # ---- write the divElem file
-divElemFile <- "../OptimResults/inputFiles/divElem_JAN20.dat"
+divElemFile <- "../OptimResults/inputFiles/divElem_MAY20_local.dat"
 cat(length(riverNodeList), "\n", sep = "",  file = divElemFile)
+elem_unique <- c()
 for (i in 1:length(riverNodeList)){
-  ielems <- which(elem_mesh_db$divID == i)
+  ielems <- which(elem_mesh_db$divID == i+1)
   elem_ids <- c2vsim_mesh$IE[ielems]
+  has_price <- match(elem_ids,IE_price$ie)
+  elem_ids <- elem_ids[!is.na(has_price)]
+  elem_unique <- c(elem_unique,elem_ids)
   cat(riverNodeList[i], " ", length(elem_ids), " ", file = divElemFile, append = TRUE)
   cat(elem_ids, sep = " ", file = divElemFile, append = TRUE)
   cat("\n", file = divElemFile, append = TRUE)
@@ -70,10 +82,10 @@ for (i in 1:length(riverNodeList)){
   }
 }
 
-prc_tl <- 90
+prc_tl <- 95
 if (prc_tl == 95) {iprc <- c(seq(2,17,2))} # 95
 if (prc_tl == 90) {iprc <- c(seq(3,17,2))} # 90
-tempdf <- DiversionTimeSeriesTAF[528:1056,-iprc]# 528:1056
+tempdf <- DiversionTimeSeriesTAF[1:1056,-iprc]# 528:1056
 cumtempdf <- apply(tempdf[,-1], 2, cumsum)
 
 p <- plot_ly(tempdf)
@@ -102,7 +114,7 @@ p %>%
 }
 
 # ---- write the diversion Time series file
-dtsFile <- paste0('../OptimResults/inputFiles/divTimeSeries_JAN20_', prc_tl ,'.dat')
+dtsFile <- paste0('../OptimResults/inputFiles/divTimeSeries_MAY20_', prc_tl ,'.dat')
 cat(length(riverNodeList), " ", dim(DiversionTimeSeriesTAF)[1],"\n", sep = "",  file = dtsFile)
 for (i in 1:length(riverNodeList)) {
   cat(riverNodeList[i]," ", file = dtsFile, append = TRUE)
@@ -112,6 +124,20 @@ for (i in 1:length(riverNodeList)) {
 
 # ---- write the Cost for each element
 # Run the code in EconomicObjFnc.R to generate the elem_price
-elemInfoFile <- "../OptimResults/inputFiles/ElemCost_JAN20.dat"
-cat(length(elem_price), "\n", sep = "",  file = elemInfoFile)
-write(x = t(cbind(c2vsim_mesh$IE,elem_price/1000000)), file = elemInfoFile, ncolumns = 2, sep = " ", append = TRUE)
+# The cost is in the IE_price data frame. However there are elements without cost.
+# For those elements we will assign a very large value
+
+{# Calculate element area
+  area <- vector(mode = "numeric", length = length(c2vsim_mesh))
+  for (i in 1:length(c2vsim_mesh)) {
+    area[i] <- c2vsim_mesh@polygons[[i]]@area
+  }
+}
+
+ie_no_price <- which(is.na(match(c2vsim_mesh$IE, IE_price$ie)))
+tmp_price <- vector(mode = "logical", length = length(c2vsim_mesh$IE))
+tmp_price[IE_price$ie] <- IE_price$pred_price_county_fe
+tmp_price[ie_no_price] <- max(tmp_price)*3
+elemInfoFile <- "../OptimResults/inputFiles/ElemCost_MAY20.dat"
+cat(length(tmp_price), "\n", sep = "",  file = elemInfoFile)
+write(x = t(cbind(c2vsim_mesh$IE, tmp_price/1000, area/(1000*1000))), file = elemInfoFile, ncolumns = 3, sep = " ", append = TRUE)

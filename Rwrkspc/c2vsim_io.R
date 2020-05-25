@@ -88,9 +88,12 @@ c2vsim.readMesh <- function(filename, NE = 1392, Nskip = 93, Ncols = 5){
 #'
 #' Then you can access the data as for example to plot the Ending storage of the third subregion:
 #' plot(GWB[[3]]$ES)
-c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056, CG = T, offset = 0){
+c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056, CG = TRUE){
   if (length(Nskip) == 1){
     Nskip <- rep(Nskip, Nsub)
+  }
+  if (length(Nskip) != Nsub){
+    stop("length(Nskip) != Nsub or length(Nskip) != 1")
   }
   if (CG){
     fieldnames <- c("Time","DP", "BS", "ES", "NDP", "GFS", "R", "GFL", "BI", "S", "SI", "TDO", "P", "NSI", "D", "CS")
@@ -101,7 +104,7 @@ c2vsim.readGWBUD <- function(filename, Nsub = 21, Nskip = 8, NtimeSteps = 1056, 
   GWBList <- vector(mode = "list", length = Nsub)
   for (i in 1:Nsub) {
     GWB <- read.table(file =  filename, 
-                      header = FALSE, sep = "", skip = Nskip[1] + (i-1)*(NtimeSteps+Nskip[i]+1) , nrows = NtimeSteps,
+                      header = FALSE, sep = "", skip = sum(Nskip[1:i]) + NtimeSteps*(i-1) , nrows = NtimeSteps,
                       quote = "",fill = TRUE,
                       col.names = fieldnames)
     GWBList[[i]] <- GWB
@@ -118,6 +121,7 @@ c2vsim.readLWBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxchar = 2
     ag_df <- data.frame(matrix(data = NA, nrow = 0, ncol = 7))
     ur_df <- data.frame(matrix(data = NA, nrow = 0, ncol = 6))
     ie_df <- data.frame(matrix(data = NA, nrow = 0, ncol = 2))
+    tm <- c()
     
     
     cnt <- 0
@@ -132,6 +136,7 @@ c2vsim.readLWBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxchar = 2
     iline = iline + 1
     for (j in 1:NtimeSteps) {
       t <- strsplit(substr(alllines[iline], 1, maxchar)[[1]], split = " ")[[1]]
+      tm <- c(tm,t[1])
       t <- as.numeric((t[which(t != "")])[-1])
       ag_df <- rbind(ag_df, t[1:7])
       ur_df <- rbind(ur_df, t[8:13])
@@ -146,12 +151,7 @@ c2vsim.readLWBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxchar = 2
     x <- c("Import", "Export")
     colnames(ie_df) <- x
     
-    temp <- vector(mode = "list", length = 3)
-    temp[[1]] <- ag_df
-    temp[[2]] <- ur_df
-    temp[[3]] <- ie_df
-    
-    out[[i]] <- temp
+    out[[i]] <- list(Time = tm, AG = ag_df, UR = ur_df, IE = ie_df)
   }
   return(out)
 }
@@ -174,30 +174,84 @@ c2vsim.readGWHYD <- function(filename, Nskip = 4, NtimeSteps = 1056, maxChar = 4
     
   }
   
-  out[[1]] <- NodeIds
-  out[[2]] <- M
+  out <- list(LayerIds = LayerIds, NodeIds = NodeIds, GWHyd = M)
   return(out)
 }
 
 
 c2vsim.readSWHYD <- function(filename, Nskip = 5, NtimeSteps = 1056, maxChar = 7000){
-  out <- vector(mode = "list", length = 2)
   alllines <- readLines(filename)
   t <- strsplit(substr(alllines[Nskip+1], 1, maxChar)[[1]], split = " ")[[1]]
   NodeIds <- as.numeric((t[which(t != "")])[-1:-2])
   M <- matrix(data = NA, nrow = NtimeSteps, ncol = length(NodeIds))
+  tm <- c()
   for (i in 1:NtimeSteps) {
     t <- strsplit(substr(alllines[Nskip+1+i], 1, maxChar)[[1]], split = " ")[[1]]
+    tm <- c(tm,t[1])
     M[i,] <- as.numeric(t[which(t != "")][-1])
     
   }
-  
-  out[[1]] <- NodeIds
-  out[[2]] <- M
+
+  out <- list(Time = tm, NodeIds = NodeIds, SWHyd = M)
   return(out)
 }
 
 c2vsim.readDiversionBUD <- function(filename, Nsub = 21, NtimeSteps = 1056, maxChar = 2000, nExpectedDivs = 246){
+  out <- vector(mode = "list", length = Nsub)
+  alllines <- readLines(filename)
+  iline <- 1
+  for (i in 1:Nsub) {
+    # loop until we find the first dashed line
+    while (TRUE){
+      if (strcmp(substr(alllines[iline], 1, 2),"--"))
+        break
+      iline = iline + 1
+    }
+    # Read the diversion ids
+    iline = iline + 1
+    t <- strsplit(substr(alllines[iline], 1, maxChar)[[1]], split = " ")[[1]]
+    divNode <- as.numeric((t[which(t != "")])[-1:-2])
+    # Read the river node ids
+    iline <- iline + 1
+    t <- strsplit(substr(alllines[iline], 1, maxChar)[[1]], split = " ")[[1]]
+    rivNode <- as.numeric(t[which(t != "")][-1:-3])
+    # Separate the SURFACE WATER DELIVERIES from the DIVERSIONS
+    iline <- iline + 1
+    t <- strsplit(substr(alllines[iline], 1, maxChar)[[1]], split = " ")[[1]]
+    t <- t[which(t != "")]
+    idp <- which(t == "(+)")
+    idm <- which(t == "(-)")
+    
+    SWD <- matrix(data = NA, nrow = NtimeSteps, ncol = length(idp))
+    DIV <- matrix(data = NA, nrow = NtimeSteps, ncol = length(idm))
+    SWDshrtg <- matrix(data = NA, nrow = NtimeSteps, ncol = length(idp))
+    DIVshrtg <- matrix(data = NA, nrow = NtimeSteps, ncol = length(idm))
+    tm <- c()
+    
+    # read the timeseries
+    iline <- iline + 1
+    for (j in 1:NtimeSteps){
+      iline <- iline + 1
+      t <- substr(alllines[iline], 1, maxChar)
+      t <- chartr(old = "(", new = " ", t)
+      t <- chartr(old = ")", new = " ", t)
+      t <- strsplit(t[[1]], split = " ")[[1]]
+      tm <- c(tm, t[1])
+      t <- as.numeric(t[which(t != "")][-1])
+      t <- pracma::Reshape(t,2,length(t)/2)
+      SWD[j,] <- t[1,idp]
+      DIV[j,] <- t[1,idm]
+      SWDshrtg[j,] <- t[2,idp]
+      DIVshrtg[j,] <- t[2,idm]
+    }
+    out[[i]] <- list(Time = tm, 
+                     SWD = list(DivId = divNode[idp], RivId = rivNode[idp], SWD = SWD, SHRT = SWDshrtg),
+                     DIV = list(DivId = divNode[idm], RivId = rivNode[idm], SWD = DIV, SHRT = DIVshrtg))
+  }
+  return(out)
+  
+  
+  
   out <- vector(mode = "list", length = 4)
   surfDelMat <- matrix(data = NA, nrow = NtimeSteps, ncol = nExpectedDivs*2)
   divMat <- matrix(data = NA, nrow = NtimeSteps, ncol = nExpectedDivs*2)
@@ -285,7 +339,7 @@ c2vsim.cumGWBUD <- function(GWB, ids = NA){
   GWBALL <- GWB[[1]]
   GWBALL[,-1] = 0
   for (i in ids) {
-    GWBALL[,-1] = GWBALL[,-1] + GWB[[i]][,-1] 
+    GWBALL[,-1] = GWBALL[,-1] + GWB[[i]][,-1]
   }
   return (GWBALL)
 }
@@ -294,23 +348,16 @@ c2vsim.cumLWBUD <- function(LWB, ids = NA){
   if (is.na(ids)){
     ids <- 1:length(LWB)
   }
-  AGALL <- LWB[[1]][[1]]
-  AGALL[,] = 0
-  URALL <- LWB[[1]][[2]]
-  URALL[,] = 0
-  IEALL <- LWB[[1]][[3]]
-  IEALL[,] = 0
+  ALL <- LWB[[1]]
+  ALL$AG[] <- 0
+  ALL$UR[] <- 0
+  ALL$IE[] <- 0
   for (i in ids) {
-    AGALL = AGALL + LWB[[i]][[1]] 
-    URALL = URALL + LWB[[i]][[2]]
-    IEALL = IEALL + LWB[[i]][[3]]
+    ALL$AG = ALL$AG + LWB[[i]]$AG
+    ALL$UR = ALL$UR + LWB[[i]]$UR
+    ALL$IE = ALL$IE + LWB[[i]]$IE
   }
-  out <- vector(mode = "list", length = 3)
-  out[[1]] <- AGALL
-  out[[2]] <- URALL
-  out[[3]] <- IEALL
-  
-  return(out)
+  return(ALL)
 }
 
 
@@ -444,13 +491,20 @@ c2vsim.readDivSpec <- function(filename){
       }
     }
   }
-  DIVSPEC[[1]] <- headers
-  DIVSPEC[[2]] <- RDV
-  DIVSPEC[[3]] <- RDVELEM
-  DIVSPEC[[4]] <- BYPS
-  DIVSPEC[[5]] <- BYPSRT
-  DIVSPEC[[6]] <- BYPSELEM
-  DIVSPEC[[7]] <- RDVnames
+  # DIVSPEC[[1]] <- headers
+  # DIVSPEC[[2]] <- RDV
+  # DIVSPEC[[3]] <- RDVELEM
+  # DIVSPEC[[4]] <- BYPS
+  # DIVSPEC[[5]] <- BYPSRT
+  # DIVSPEC[[6]] <- BYPSELEM
+  # DIVSPEC[[7]] <- RDVnames
+  DIVSPEC <- list(RDVnames = RDVnames,
+                  headers = headers,
+                  RDV = RDV,
+                  RDVELEM = RDVELEM,
+                  BYPS = BYPS,
+                  BYPSRT = BYPSRT,
+                  BYPSELEM = BYPSELEM)
   return(DIVSPEC)
 }
 
@@ -477,42 +531,42 @@ c2vsim.readDivData <- function(filename, skiplines = 376, NtimeSteps = 1056){
 
 c2vsim.writeDivSpec <- function(filename, DivSpec){
   con <- file(filename, open = "w")
-  write(DivSpec[[1]][1], file = con)
+  write(DivSpec$headers[1], file = con)
   
-  write.table(DivSpec[[2]], file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
+  write.table(DivSpec$RDV, file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
   
-  for (i in 1:length(DivSpec[[3]])) {
-    write(c(DivSpec[[2]][i,1], dim(DivSpec[[3]][[i]])[1], DivSpec[[3]][[i]][1,]), file = con, sep = " ")
-    if (dim(DivSpec[[3]][[i]])[1] > 2)
-      write.table(DivSpec[[3]][[i]][-1,], file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
-    else if (dim(DivSpec[[3]][[i]])[1] == 2)
-      write(DivSpec[[3]][[i]][2,], file = con, sep = " ")
+  for (i in 1:length(DivSpec$RDVELEM)) {
+    write(c(DivSpec$RDV[i,1], dim(DivSpec$RDVELEM[[i]])[1], DivSpec$RDVELEM[[i]][1,]), file = con, sep = " ")
+    if (dim(DivSpec$RDVELEM[[i]])[1] > 2)
+      write.table(DivSpec$RDVELEM[[i]][-1,], file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
+    else if (dim(DivSpec$RDVELEM[[i]])[1] == 2)
+      write(DivSpec$RDVELEM[[i]][2,], file = con, sep = " ")
   }
   
-  write(DivSpec[[1]][2], file = con)
-  write(DivSpec[[1]][3], file = con)
+  write(DivSpec$headers[2], file = con)
+  write(DivSpe$headers[3], file = con)
   write("1min", file = con)
-  write(DivSpec[[1]][4], file = con)
+  write(DivSpec$headers[4], file = con)
   write("1min", file = con)
   write("C", file = con)
   
-  for (i in 1:dim(DivSpec[[4]])[1]){
-    write(DivSpec[[4]][i,], file = con, sep = " ", ncolumns = 6, append = TRUE)
-    if (DivSpec[[4]][i,4]<0){
-      for (j in 1:dim(DivSpec[[5]][[i]])[1]) {
-        temp <- sprintf("%.2f", DivSpec[[5]][[i]][j,])
+  for (i in 1:dim(DivSpec$BYPS)[1]){
+    write(DivSpec$BYPS[i,], file = con, sep = " ", ncolumns = 6, append = TRUE)
+    if (DivSpec$BYPS[i,4]<0){
+      for (j in 1:dim(DivSpec$BYPSRT[[i]])[1]) {
+        temp <- sprintf("%.2f", DivSpec$BYPSRT[[i]][j,])
         write(paste(temp[1], temp[2]), file = con)
       }
       #write.table(DivSpec[[5]][[i]], file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
     }
   }
   
-  for (i in 1:length(DivSpec[[6]])) {
-    write(c(DivSpec[[4]][i,1], dim(DivSpec[[6]][[i]])[1], DivSpec[[6]][[i]][1,]), file = con, sep = " ")
-    if (dim(DivSpec[[6]][[i]])[1] > 2)
-      write.table(DivSpec[[6]][[i]][-1,], file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
-    else if (dim(DivSpec[[6]][[i]])[1] == 2)
-      write(DivSpec[[6]][[i]][2,], file = con, sep = " ")
+  for (i in 1:length(DivSpec$BYPSELEM)) {
+    write(c(DivSpec$BYPS[i,1], dim(DivSpec$BYPSELEM[[i]])[1], DivSpec$BYPSELEM[[i]][1,]), file = con, sep = " ")
+    if (dim(DivSpec$BYPSELEM[[i]])[1] > 2)
+      write.table(DivSpec$BYPSELEM[[i]][-1,], file = con, append = TRUE, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE)
+    else if (dim(DivSpec$BYPSELEM[[i]])[1] == 2)
+      write(DivSpec$BYPSELEM[[i]][2,], file = con, sep = " ")
   }
   
   close(con)

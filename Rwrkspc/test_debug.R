@@ -47,3 +47,18 @@ for (iel in 1:length(m)) {
   crop_acres <- elem_area*crop_el[,2]/sum(crop_el[,2])
   elem_price[iel] <- sum(crop_acres*crop_el[,3])
 }
+
+convertTime <- function(C2VsimTime, outFormat = "Date"){
+  year <- vector(mode = "numeric", length(C2VsimTime))
+  month <- vector(mode = "numeric", length(C2VsimTime))
+  day <- vector(mode = "numeric", length(C2VsimTime))
+  for (i in 1:length(C2VsimTime)) {
+    t <- strsplit(C2VsimTime[i], split = "_")[[1]]
+    #hr <-as.numeric(strsplit(t[2], split = ":")[[1]])
+    dt <- as.numeric(strsplit(t[1], split = "/")[[1]])
+    year[i] <- dt[3]
+    month[i] <- dt[1]
+    day[i] <- dt[2]
+  }
+  return(list(y = year, m = month, d = day))
+}

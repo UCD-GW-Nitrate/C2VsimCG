@@ -1,7 +1,7 @@
 library("readxl")
 library("rgdal")
 
-# THe file with the prices
+# The file with the prices
 IE_price <- read_xlsx('cv_land_price_022620.xlsx')
 
 c2vsim_mesh <- readOGR(dsn = "../gis_data", layer = "C2Vsim_mesh")

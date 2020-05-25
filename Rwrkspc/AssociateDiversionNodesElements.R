@@ -1,8 +1,8 @@
-library("rgdal")
+library(rgdal)
 library(stringr)
-source("c2vsim_io.R")
+library(gwtools)
 # Read the diversion specification data
-divSpec <- c2vsim.readDivSpec(filename = "../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdivspec.dat")
+divSpec <- gwtools::c2vsim.readDivSpec(filename = "../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdivspec.dat")
 
 # Read the river nodes
 rivernodes <- readOGR(dsn = "../gis_data/C2Vsim_riverNodes.shp")
@@ -139,7 +139,7 @@ canalNames <- c(canalNames, "Whiskeytown and Shasta")
 canalNodes <- rbind(canalNodes, c(40.631, -122.477))
 
 # Make a unique list of diversions that are accosiated with river nodes ---------
-diversionRiverNodes <- unique(divSpec[[2]][,2])
+diversionRiverNodes <- unique(divSpec$RDV[,2])
 diversionRiverNodes <- diversionRiverNodes[-which(diversionRiverNodes == 0)]
 uDivCoords <- matrix(data = NA, nrow = length(diversionRiverNodes), ncol = 2)
 #uDivNames <- vector(mode = "list", length = length(diversionRiverNodes))
@@ -152,14 +152,14 @@ for (i in 1:length(diversionRiverNodes)) {
   uDivCoords[i,] <- as.numeric(slot(rivernodes_4326, "coords")[ind, c(2,1)])
   
   # find how many diversion exists from this river node
-  ii <- which(divSpec[[2]][,2] == diversionRiverNodes[i])
+  ii <- which(divSpec$RDV[,2] == diversionRiverNodes[i])
   # Find a common name for those diversions
-  divname <- divSpec[[7]][ii[1]]
-  elemIds <- divSpec[[3]][ii[1]][[1]][,1]
+  divname <- divSpec$RDVnames[ii[1]]
+  elemIds <- divSpec$RDVELEM[ii[1]][[1]][,1]
   if (length(ii)>1){
     for (j in 2:length(ii)) {
-      elemIds <- c(elemIds, divSpec[[3]][ii[j]][[1]][,1])
-      divname <- paste0(divname, "</br>", divSpec[[7]][ii[j]])
+      elemIds <- c(elemIds, divSpec$RDVELEM[ii[j]][[1]][,1])
+      divname <- paste0(divname, "</br>", divSpec$RDVnames[ii[j]])
       #divname <- extractCommonRoot(divname, divSpec[[7]][ii[j]])
     }
   }
@@ -171,13 +171,13 @@ for (i in 1:length(diversionRiverNodes)) {
 # Append the diversions that have no river node associated --------------------------
 # List find the elements that receive diversion from the 0 river nodes
 canalElem <- vector(mode = "list", length = length(canalNames))
-for (i in 1:dim(divSpec[[2]])[1]){
-  if (divSpec[[2]][i,2] == 0){
+for (i in 1:dim(divSpec$RDV)[1]){
+  if (divSpec$RDV[i,2] == 0){
     not_found <- T
     for (j in 1:length(canalNames)){
       nstr <- nchar(canalNames[j])
-      if (substr(divSpec[[7]][i], 1, nstr) == canalNames[j]){
-        canalElem[[j]] <- unique(c(canalElem[[j]], divSpec[[3]][[i]][,1]))
+      if (substr(divSpec$RDVnames[i], 1, nstr) == canalNames[j]){
+        canalElem[[j]] <- unique(c(canalElem[[j]], divSpec$RDVELEM[[i]][,1]))
         not_found <- F
         break
       }
@@ -191,6 +191,8 @@ AllNames <- c(uDivNames,canalNames)
 AllCoords <- rbind(uDivCoords, canalNodes)
 AllElem <- c(uDivElem, canalElem)
 type <- c(rep(1,length(uDivNames)), rep(2,length(canalNames)))
+
+save("AllNames", "AllCoords", "AllElem", "type",file = "AssociateDiversionNodes.RData")
 
 # Write diversion nodes as js file ---------------------------------------------
 filename = "../js_scripts/C2vsimDiversions.js"

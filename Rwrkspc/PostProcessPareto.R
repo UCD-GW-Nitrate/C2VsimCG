@@ -1,17 +1,18 @@
 library("lubridate")
 library("pracma")
 library("rgdal")
-source('../../nsgaii/Rnsgaii/nsgaii_io.R')
-source("c2vsim_io.R")
+library(gwtools)
+#source('../../nsgaii/Rnsgaii/nsgaii_io.R')
+#source("c2vsim_io.R")
 
 #fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
 #fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_63246.dat"
-fl1 <- "../OptimResults/JAN_20/pS_JAN20_95_71313.dat"
-fl2 <- "../OptimResults/JAN_20/pH_JAN20_95_71313.dat"
-ps <- nsgaii.readParetoSolution(fl1)
+fl1 <- "../OptimResults/MAY_20/pS_MAY20_90_local.dat"
+fl2 <- "../OptimResults/MAY_20/pH_MAY20_90_local.dat"
+ps <- gwtools::nsgaii.readParetoSolution(fl1)
 
 # plot Hyper Volume evolution
-phist <- nsgaii.readParetoHistory(filename = fl2, nGen = 1000)
+phist <- gwtools::nsgaii.readParetoHistory(filename = fl2, nGen = 1000)
 HV <- vector(mode = "numeric", length = length(phist))
 refPoint <- c(-1100000/100000, 110000/10000)
 for (i in 1:length(phist)) {
@@ -22,7 +23,7 @@ plot(HV)
 
 # Read the element ids that were used in the optimization =================
 # 
-divElemFile <- "../OptimResults/inputFiles/divElem_JAN20.dat"
+divElemFile <- "../OptimResults/inputFiles/divElem_MAY20_local.dat"
 nDivPoints <- scan(file = divElemFile, skip = 0, n = 1)
 
 divelem <- c()
@@ -40,12 +41,12 @@ for (i in 1:nDivPoints) {
 # 
 #diversion_polygons <- readOGR(dsn = "../gis_data/diversionElements.shp")
 #diversion_polygons4326 <- spTransform(diversion_polygons, CRS("+init=epsg:4326"))
-diversion_polygons <- readOGR(dsn = "../gis_data", layer ="Feb2020_div_nodes")
+diversion_polygons <- readOGR(dsn = "../gis_data", layer ="MAY2020_local_div_nodes")
 diversion_polygons4326 <- spTransform(diversion_polygons, CRS("+init=epsg:4326"))
 
 # Write them as javascript variable================
 # 
-candidate_polys_file <- "../js_scripts/all_candidate_polys_JAN20.js"
+candidate_polys_file <- "../js_scripts/all_candidate_polys_MAY20_local.js"
 # # This containts the element ids in the order they are printed in the following js file
 tempv <- vector(mode = "numeric", length = 0) 
 cat("var all_candidate_polys = [\n", file = candidate_polys_file)
@@ -80,7 +81,7 @@ cat("];", file = candidate_polys_file, append = TRUE)
 # id, x (objective 1), y (objective 2), idLand (an array with the polygon ids)
 ## write Pareto solution as javascript variable
 #js_file <- "../js_scripts/paretoSolutions_63246.js"
-js_file <- "../js_scripts/pS_JAN20_95_71313.js"
+js_file <- "../js_scripts/pS_MAY20_90_local.js"
 cat("var paretoPoints = [\n", file = js_file)
 for (i in 1:dim(ps[[2]])[1]) {
   cat("\t{ id: ", i, ", x: ", ps[[2]][i,2], ", y: ", -ps[[2]][i,1], sep = "",  file = js_file, append = TRUE)
@@ -110,7 +111,7 @@ cat("];", file = js_file, append = TRUE)
 # Read the Diversion Time Series file ===========================
 # 
 # fileDTS <- "../RunC2Vsim/divTimeSeries.dat"
-fileDTS <- "../OptimResults/inputFiles/divTimeSeries_JAN20_95.dat"
+fileDTS <- "../OptimResults/inputFiles/divTimeSeries_MAY20_90.dat"
 info <- scan(file = fileDTS, skip = 0, n = 2)
 dts.data <- matrix(nrow = info[2], ncol = info[1])
 dts.id <- vector(mode = "numeric",  length = info[1])
@@ -136,7 +137,7 @@ for (i in 1:length(dts.id)) {
 
 # Write diversion Timeseries as javascript variable ========================
 # js_DTS_file <- "../js_scripts/diversionTimeSeries.js"
-js_DTS_file <- "../js_scripts/DTS_JAN20_95.js"
+js_DTS_file <- "../js_scripts/DTS_MAY20_90_local.js"
 cat("var divNodes = [\n", file = js_DTS_file)
 
 sdateId = 528
@@ -174,18 +175,18 @@ cat("];", file = js_DTS_file, append = TRUE)
 
 
 # Execute the simulation for the pareto solution=================================
-# to read  the groundwater storage change and the steam return flow First run the first
+# to read  the groundwater storage change and the stream return flow First run the first
 # code snippet to load the pareto solutions
 
 # Run the base simulation so that we can compare the pareto solution
 # Read the base simulation diversion data, print, run and read
 
 # Read ...
-divspec <- c2vsim.readDivSpec("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdivspec.dat")
-divdata <- c2vsim.readDivData("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdiversions.dat")
+divspec <- gwtools::c2vsim.readDivSpec("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdivspec.dat")
+divdata <- gwtools::c2vsim.readDivData("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Simulation/CVdiversions.dat")
 # Write...
-c2vsim.writeDivSpec("../RunC2Vsim/tempRspec.dat", DivSpec = divspec)
-c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = divdata)
+gwtools::c2vsim.writeDivSpec("../RunC2Vsim/tempRspec.dat", DivSpec = divspec)
+gwtools::c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = divdata)
 
 # run C2Vsim (after you make sure that the diversion files in the C2Vsim.in are the ones listed above)
 proj_dir <- getwd()
@@ -194,24 +195,24 @@ system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Simulation3.0
 system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Budget3.02.exe CVBudget.in")
 
 # Read the result 
-GWBUDbase <- c2vsim.readGWBUD("Results/CVground.BUD", NtimeSteps = 528)
-DivBUDbase <- c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528)
-SWHYDbase <- c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
-GWHYDbase <- c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
+GWBUDbase <- gwtools::c2vsim.readGWBUD("Results/CVground.BUD", Nskip = c(8,rep(9,20)), NtimeSteps = 528)
+DivBUDbase <- gwtools::c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528)
+SWHYDbase <- gwtools::c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
+GWHYDbase <- gwtools::c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
 setwd(proj_dir)
 
 
 ### Evaluate the Pareto Solutions
-psGWBUD <- vector(mode = "list", length = dim(ps[[2]])[1])
-psDVBUD <- vector(mode = "list", length = dim(ps[[2]])[1])
-psSWHYD <- vector(mode = "list", length = dim(ps[[2]])[1])
-psGWHYD <- vector(mode = "list", length = dim(ps[[2]])[1])
-for (i in seq(1,dim(ps[[2]])[1],1)) {
+psGWBUD <- vector(mode = "list", length = dim(ps$of)[1])
+psDVBUD <- vector(mode = "list", length = dim(ps$of)[1])
+psSWHYD <- vector(mode = "list", length = dim(ps$of)[1])
+psGWHYD <- vector(mode = "list", length = dim(ps$of)[1])
+for (i in seq(1,dim(ps$of)[1],1)) {
   # make a copy of divspec
   temp_divspec <- divspec
   temp_divdata <- divdata
   
-  id_active <- which( ps[[1]][i,] == 1 )
+  id_active <- which( ps$dv[i,] == 1 )
   active_elements <- divelem[id_active]
   div_node_act_elem <- divNodeId[id_active]
   unique_div_nodes <- unique(div_node_act_elem)
@@ -223,18 +224,18 @@ for (i in seq(1,dim(ps[[2]])[1],1)) {
     if (is.na(id_el[1]))
       next
     
-    temp_divspec[[1]][1] <- temp_divspec[[1]][1] + 1
-    temp_divspec[[2]] <- rbind(temp_divspec[[2]], 
-                               c(dim(temp_divspec[[2]])[1]+1, unique_div_nodes[j], 265,1, dim(divdata)[2]-1+j, 0.95,
+    temp_divspec$headers[1] <- temp_divspec$headers[1] + 1
+    temp_divspec$RDV <- rbind(temp_divspec$RDV, 
+                               c(dim(temp_divspec$RDV)[1]+1, unique_div_nodes[j], 265,1, dim(divdata)[2]-1+j, 0.95,
                                  dim(divdata)[2]-1+j, 0.05,1,1,dim(divdata)[2]-1+j,0,1,1))
     
     a <- c()
     for (k in 1:length(id_el)) {
       ii <- which(diversion_polygons$IE == active_elements[id_el[k]])
-      a <- c(a, slot(slot(diversion_polygons, "polygons")[[ii]],"area")/1000000)
+      a <- c(a, diversion_polygons@polygons[[ii]]@area/1000000)
     }
     m <- cbind(active_elements[id_el], a)
-    temp_divspec[[3]][[length(divspec[[3]])+j]] <- m
+    temp_divspec$RDVELEM[[length(divspec$RDVELEM)+j]] <- m
     
     # Add the time series
     idiv <- which(dts.id == unique_div_nodes[j])
@@ -242,8 +243,8 @@ for (i in seq(1,dim(ps[[2]])[1],1)) {
   }
   
   # Write the files
-  c2vsim.writeDivSpec("../RunC2Vsim/tempRspec.dat", DivSpec = temp_divspec)
-  c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = temp_divdata, NCOLDV = dim(temp_divdata)[2]-1)
+  gwtools::c2vsim.writeDivSpec("../RunC2Vsim/tempRspec.dat", DivSpec = temp_divspec)
+  gwtools::c2vsim.writeDivData("../RunC2Vsim/tempRdata.dat", data = temp_divdata, NCOLDV = dim(temp_divdata)[2]-1)
   
   setwd("../RunC2Vsim")
   #file.remove("Results/CVdiverdtl.bin","Results/CVground.bin", "Results/CVGWhyd.out","Results/CVSWhyd.out",
@@ -252,10 +253,10 @@ for (i in seq(1,dim(ps[[2]])[1],1)) {
   system("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/bin/Budget3.02.exe CVBudget.in")
   
   # Read the result 
-  GWBUD <- c2vsim.readGWBUD("Results/CVground.BUD", NtimeSteps = 528)
-  DivBUD <- c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528, nExpectedDivs = 253)
-  SWHYD <- c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
-  GWHYD <- c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
+  GWBUD <- gwtools::c2vsim.readGWBUD("Results/CVground.BUD", Nskip = c(8,rep(9,20)),  NtimeSteps = 528)
+  DivBUD <- gwtools::c2vsim.readDiversionBUD(filename = "Results/CVdiverdtl.BUD", NtimeSteps = 528)
+  SWHYD <- gwtools::c2vsim.readSWHYD(filename = "Results/CVSWhyd.out", Nskip = 5, maxChar = 7000, NtimeSteps = 528)
+  GWHYD <- gwtools::c2vsim.readGWHYD(filename = "Results/CVGWhyd.out", NtimeSteps = 528)
   psGWBUD[[i]] <- GWBUD
   psDVBUD[[i]] <- DivBUD
   psSWHYD[[i]] <- SWHYD
@@ -267,7 +268,7 @@ for (i in seq(1,dim(ps[[2]])[1],1)) {
 
 #=========SAVE ALL RUN RESULTS===========
 # solutionfileBUD <- "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData"
-solutionfileBUD <- "../OptimResults/JAN_20/pS_JAN20_95_BUD_71313.RData"
+solutionfileBUD <- "../OptimResults/MAY_20/pS_MAY20_90_local.RData"
 
 save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGWHYD,
      file = solutionfileBUD)

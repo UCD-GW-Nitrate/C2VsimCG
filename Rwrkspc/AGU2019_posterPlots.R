@@ -6,7 +6,7 @@ source('~/GitHub/nsgaii/Rnsgaii/nsgaii_io.R')
 MAF_KM3 <- 1.2334818375475
 CVgwbud <- c2vsim.readGWBUD("../c2vsim_cg_1921ic_r374_rev/C2VSim_CG_1921IC_R374_rev/Results/CVground.BUD")
 CVgwbud <- c2vsim.cumGWBUD(CVgwbud)
-tm <- tm <- seq.Date(from = as.Date(paste0(1921,"/",10,"/1")),to = as.Date(paste0(2009,"/",9,"/1")),by = "month")
+tm <- seq.Date(from = as.Date(paste0(1921,"/",10,"/1")),to = as.Date(paste0(2009,"/",9,"/1")),by = "month")
 
 ggplot(CVgwbud, aes(x = tm, y = ((ES - ES[1])/1000000)*MAF_KM3 ) ) +
   geom_line(size = 1.2, color = "red") + 

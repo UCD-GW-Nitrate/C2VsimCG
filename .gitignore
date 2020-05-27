@@ -24,6 +24,8 @@
 !/OptimResults
 /OptimResults/*
 !/OptimResults/*.md
+!/OptimResults/*.data
+!/OptimResults/*.plt
 #
 !/OptimResults/maxWTminArea
 /OptimResults/maxWTminArea/*

@@ -28,6 +28,16 @@ riverNodeList <- c(419, 55, 5, 26, 29, 423, 427, 19)
 riverNodeName <- c("Delta", "Friant-Kern", "Kern", "Kings 1", "Kings 2", "Kaweah 1", "Kaweah 2", "Tule")
 riverNodeColors <- c('#f781bf','#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628')
 
+{# Create a shapefile with the diversion nodes that are used in the simulations
+  river_nodes_shp <- readOGR(dsn = "../gis_data", layer = "C2Vsim_riverNodes")
+  data_tmp <- river_nodes_shp@data
+  data_tmp$UsedDiv <- 0
+  data_tmp$UsedDivnames <- NA
+  data_tmp$UsedDiv[match(riverNodeList,data_tmp$IRV)] <- seq(1,length(riverNodeList),1)
+  data_tmp$UsedDivnames[match(riverNodeList,data_tmp$IRV)] <- riverNodeName
+  river_nodes_shp@data <- data_tmp
+  writeOGR(river_nodes_shp, dsn = "../gis_data", layer = "MO_div_nodes",driver = ogrDrivers()$name[17])
+}
 
 for (i in seq(length(index_AllNames),1,-1)) {
   print(AllNames[index_AllNames[i]])

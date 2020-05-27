@@ -7,7 +7,8 @@ library(gwtools)
 
 # ElemInfo File
 # Runc first the code of the AssociateDiversionNodesElements.R script to create
-# the AllNames and AllElem variables
+# the AllNames and AllElem variables or load the saved data
+load(file = "AssociateDiversionNodes.RData")
 # @@@@@@@@@@@@@@@@@@@@@@@@@
 c2vsim_mesh <- readOGR(dsn = "../gis_data/C2Vsim_mesh.shp")
 index_AllNames <- c(79, 81, 82, 80, 47, 77, 76, 60, 61, 62, 66, 67, 68, 69, 71, 72, 73)

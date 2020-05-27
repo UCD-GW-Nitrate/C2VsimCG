@@ -7,19 +7,36 @@ library(gwtools)
 
 #fl1 <- "../OptimResults/maxWTminArea/paretoSolutions_58946.dat"
 #fl1 <- "../OptimResults/maxWTminDist/paretoSolutions_63246.dat"
-fl1 <- "../OptimResults/MAY_20/pS_MAY20_90_local.dat"
-fl2 <- "../OptimResults/MAY_20/pH_MAY20_90_local.dat"
+fl1 <- "../OptimResults/MAY_20/pS_MAY20_95_local.dat"
+fl2 <- "../OptimResults/MAY_20/pH_MAY20_95_local.dat"
 ps <- gwtools::nsgaii.readParetoSolution(fl1)
 
 # plot Hyper Volume evolution
 phist <- gwtools::nsgaii.readParetoHistory(filename = fl2, nGen = 1000)
 HV <- vector(mode = "numeric", length = length(phist))
-refPoint <- c(-1100000/100000, 110000/10000)
+npar <- vector(mode = "numeric", length = length(phist))
+refPoint <- c(1000, 2000)
 for (i in 1:length(phist)) {
-  HV[i] <- nsgaii.calculateHyperVolume(cbind(phist[[i]][,1]/100000, phist[[i]][,2]/10000), refPoint)
+  HV[i] <- nsgaii.calculateHyperVolume(cbind(phist[[i]][,1], phist[[i]][,2]), refPoint)
+  npar[i] <- dim(phist[[i]])[1]
 }  
 
-plot(HV)
+plot(HV/1000000)
+{# write hypervolume for gnuplot
+  write.table(data.frame(1:1000, HV/1000000, npar), 
+              file = "../OptimResults/HyperVolumeLocal_95.data",append = F, row.names = F, col.names = F)
+}
+
+{# write pareto fronts every 100 generations
+  tmp_hist <- matrix(data = NA, nrow = 100, ncol = 24)
+  cnt = 1;
+  for(i in seq(100,1000,100) ){
+    tmp_hist[1:dim(phist[[i]])[1],cnt:(cnt+1)] <- cbind(-phist[[i]][,1],phist[[i]][,2])
+    cnt = cnt + 2
+  }
+  write.table(tmp_hist, 
+              file = "../OptimResults/ParetoHistLocal_95.data",append = F, row.names = F, col.names = F)
+}
 
 # Read the element ids that were used in the optimization =================
 # 
@@ -81,7 +98,7 @@ cat("];", file = candidate_polys_file, append = TRUE)
 # id, x (objective 1), y (objective 2), idLand (an array with the polygon ids)
 ## write Pareto solution as javascript variable
 #js_file <- "../js_scripts/paretoSolutions_63246.js"
-js_file <- "../js_scripts/pS_MAY20_90_local.js"
+js_file <- "../js_scripts/pS_MAY20_95_local.js"
 cat("var paretoPoints = [\n", file = js_file)
 for (i in 1:dim(ps[[2]])[1]) {
   cat("\t{ id: ", i, ", x: ", ps[[2]][i,2], ", y: ", -ps[[2]][i,1], sep = "",  file = js_file, append = TRUE)
@@ -111,7 +128,7 @@ cat("];", file = js_file, append = TRUE)
 # Read the Diversion Time Series file ===========================
 # 
 # fileDTS <- "../RunC2Vsim/divTimeSeries.dat"
-fileDTS <- "../OptimResults/inputFiles/divTimeSeries_MAY20_90.dat"
+fileDTS <- "../OptimResults/inputFiles/divTimeSeries_MAY20_95.dat"
 info <- scan(file = fileDTS, skip = 0, n = 2)
 dts.data <- matrix(nrow = info[2], ncol = info[1])
 dts.id <- vector(mode = "numeric",  length = info[1])
@@ -137,7 +154,7 @@ for (i in 1:length(dts.id)) {
 
 # Write diversion Timeseries as javascript variable ========================
 # js_DTS_file <- "../js_scripts/diversionTimeSeries.js"
-js_DTS_file <- "../js_scripts/DTS_MAY20_90_local.js"
+js_DTS_file <- "../js_scripts/DTS_MAY20_95_local.js"
 cat("var divNodes = [\n", file = js_DTS_file)
 
 sdateId = 528
@@ -268,7 +285,7 @@ for (i in seq(1,dim(ps$of)[1],1)) {
 
 #=========SAVE ALL RUN RESULTS===========
 # solutionfileBUD <- "../OptimResults/maxWTminDist/ParetoSolutionsBUD_63246.RData"
-solutionfileBUD <- "../OptimResults/MAY_20/pS_MAY20_90_local.RData"
+solutionfileBUD <- "../OptimResults/MAY_20/pS_MAY20_95_local.RData"
 
 save(GWBUDbase, DivBUDbase, SWHYDbase, GWHYDbase, psGWBUD,psDVBUD, psSWHYD, psGWHYD,
      file = solutionfileBUD)
@@ -296,8 +313,8 @@ for (i in 1:length(psGWBUD)) {
 # Write Ending Storage  as javascript variables -------
 #js_ES_file <- "../js_scripts/ES_63246.js"
 #js_GFS_file <- "../js_scripts/GFS_63246.js"
-js_ES_file <- "../js_scripts/ES_JAN20_95_71313.js"
-js_GFS_file <- "../js_scripts/GFS_JAN20_95_71313.js"
+js_ES_file <- "../js_scripts/ES_MAY20_95_local.js"
+js_GFS_file <- "../js_scripts/GFS_MAY20_95_local.js"
 myfnc.writeTSMatrix2JS(js_ES_file, data = ES, varName = "ES", sy = 1965, sm = 10)
 myfnc.writeTSMatrix2JS(js_GFS_file, data = -GFS, varName = "GFS", sy = 1965, sm = 10)
 

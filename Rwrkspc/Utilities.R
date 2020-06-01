@@ -90,3 +90,16 @@ color_elem_price <- function(price, min_price, max_price){
   b = round(236*(1-u) + 31*u)
   return (paste0('#',paste(as.hexmode(c(r,g,b)),collapse = '')))
 }
+
+
+distPointLineSeg <- function(xp, yp, x1, y1, x2, y2){
+  L <- sqrt((x2 - x1)^2 + (y2 - y1)^2)
+  r <- ((y1 - yp) * (y1 - y2)-(x1 - xp)*(x2 - x1))/L^2
+  if (r > 1 | r < 0){
+    dst = min(sqrt( (xp - x1)^2 + (yp - y1)^2 ), sqrt( (xp - x2)^2 + (yp - y2)^2 ))
+  }
+  else{
+    dst <- abs(((x2 - x1) * (y1 - yp) - (x1 - xp) * (y2 - y1))/ L)
+  }
+  return(dst)
+}

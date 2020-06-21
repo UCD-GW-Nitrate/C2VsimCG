@@ -163,7 +163,7 @@ p %>%
 # orca(p,"../OptimResults/DTS_local_95.png", width = 850*2, height = 530*2 )
   
 {# plot stream flow hydrograph and the percentile thresholds
-  id_riv <- 55
+  id_riv <- 419
   p <- plot_ly()
   p <- add_trace(p, x = DiversionTimeSeriesTAF$Time, y=SWHYD$SWHyd[,id_riv]/1000000, type = 'scatter', mode = 'lines', name = 'Streamflow')
   p90 <- as.numeric(quantile(SWHYD$SWHyd[,id_riv],0.9))/1000000

@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <style>
+            .leftside, .rightside{
+                height: 100vh;
+                width: 100%;
+            }
+            .leftside{
+                background:whitesmoke;
+            }
+            .rightside{
+                background:whitesmoke;
+            }
+            .label {
+                color: Black;
+                padding: 14px;
+                font-family: Arial;
+            }
+        </style>
+        
+        <!-- This is used to split the page -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" 
+        rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        
+        <!-- include the jQuery and jQuery UI scripts -->
+        <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+
+        <!-- plus a jQuery UI theme, here I use "flick" -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.4/themes/flick/jquery-ui.css">
+
+        <!-- This is needed for the Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+
+        <!-- Canvas  -->
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+
+        <!-- Here I put my includes -->
+        <script type="text/javascript" src="ElemCostDEC20_scen1.js"></script>
+        <script type="text/javascript" src="C2Vsim_rivers.js"></script>
+        <script type="text/javascript" src="DTS_DEC20_scen1.js"></script>
+        <script type="text/javascript" src="pS_95_100_DEC20_scen1.js"></script>
+        <script type="text/javascript" src="StorageGain_95_100_scen1.js"></script>
+        <script type="text/javascript" src="StreamGain_95_100_scen1.js"></script>
+
+        <script type="text/javascript">
+            // Most of the code should be inside the onload function
+            // Initialize variables
+            var paretoPoly = new Array();
+            var landCost = new Array();
+            var capCost = new Array();
+            var liftCost = new Array();
+            var convCost = new Array();
+            for (var i = 0; i < pS.length; i++){
+                landCost.push({x: pS[i].x, y: pS[i].land, z: pS[i].land});
+                capCost.push({x: pS[i].x, y: pS[i].land + pS[i].cap, z:pS[i].cap});
+                liftCost.push({x: pS[i].x, y: pS[i].land + pS[i].cap + pS[i].lift, z:pS[i].lift});
+                convCost.push({x: pS[i].x, y: pS[i].land + pS[i].cap + pS[i].lift + pS[i].conv, z:pS[i].conv});
+            }
+            landCost.sort(compare);
+            capCost.sort(compare);
+            liftCost.sort(compare);
+            convCost.sort(compare);
+
+            function compare(a, b) {
+                if (a.x > b.x) return 1;
+                if (b.x > a.x) return -1;
+                return 0;
+            }
+
+            // Pareto front chart
+            window.onload = function(){
+                divColors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#ff7f00','#fb9a99','#cab2d6','#6a3d9a','#ffff99','#b15928'];
+                divNames = ['Calaveras','Stanislaus','Tuolumne','Merced','San Joaquin A','San Joaquin B ','Kings','Kaweah','Tule','Kern'];
+                var chartPareto = new CanvasJS.Chart("chartPareto",{
+                    theme:"light2",
+                    animationEnabled: true,
+                    zoomEnabled: true,
+                    title:{
+                        text: "Pareto Front"
+                    },
+                    axisX: {
+                        title: "Groundwater Storage Gain [MAF]",
+                        minimum: 1.5,
+                        maximum: 5.2
+                    },
+                    axisY:{
+                        title: "Cost [$M]",
+                        minimum: 100,
+                        maximum: 350
+                    },
+                    toolTip: {
+                        shared: true
+                    },
+                    axisY2: {
+                        title: "Cost - breakdown [$M]",
+                        titleFontColor: "#C0504E",
+                        lineColor: "#C0504E",
+                        labelFontColor: "#C0504E",
+                        tickColor: "#C0504E",
+                        minimum: 0,
+                        maximum: 350
+                    },
+                    data: [
+                        {
+                            type: "splineArea",
+                            name: "Conveyance cost",
+                            showInLegend: true,
+                            axisYType: "secondary",
+                            toolTipContent:"Convayance :${z}M",
+                            dataPoints:convCost
+                        },
+                        {
+                            type: "splineArea",
+                            name: "Lift cost",
+                            showInLegend: true,
+                            axisYType: "secondary",
+                            toolTipContent:"Lift :${z}M",
+                            dataPoints:liftCost
+                        },
+                        {
+                            type: "splineArea",
+                            name: "Capital cost",
+                            showInLegend: true,
+                            axisYType: "secondary",
+                            toolTipContent:"Capital :${z}M",
+                            dataPoints:capCost
+                        },
+                        {
+                            type: "splineArea",
+                            name: "Land cost",
+                            showInLegend: true,
+                            axisYType: "secondary",
+                            toolTipContent:"Land :${z}M",
+                            dataPoints:landCost
+                        },
+                        { 
+                            type: "scatter",
+                            click: onClick,
+                            toolTipContent: "<b>ID: </b>{id}, " + 
+                                            "<b>Nel: </b>{Nel} <br/>" + 
+                                            "<b>Cost: </b>${y}M<br/>" +
+                                            "<b>GWS: </b>{x}MAF<br/>" + 
+                                            "Qtot: {totQ} MAF<br/>" + 
+                                            "Cost: ${cost_per_acft}k/ACFT<br/>" +
+                                            "Area: {acres}k acres",
+                            color: '#08519c', // #cb181d
+                            dataPoints: pS,
+                        },
+                        { 
+                            type: "scatter",
+                            color: '#cb181d', // #cb181d
+                            markerSize: 15,
+                            dataPoints: []
+                        }
+                    ]
+                });
+                chartPareto.render();
+
+                function onClick(e){
+                    //console.log(e.dataPoint.idland.length);
+                    // Remove the pareto polygons if they have plotted
+                    for (i = 0; i < paretoPoly.length; i++){
+                        paretoPoly[i].remove();
+                    }
+                    // Plot the polygons that correspond to the selected solution
+                    for (i = 0; i < e.dataPoint.idland.length; i++){
+                        var iel = e.dataPoint.idland[i];
+                        paretoPoly.push(L.polygon(elem_cost[iel-1].Polygon, {color: '#05fcf8', weight: 1, fillColor: elem_cost[iel-1].color, fillOpacity: 1})
+                        .bindPopup('Land '+ elem_cost[iel-1].land.toFixed(2) + ' $<dd>lift ' + elem_cost[iel-1].lift.toFixed(1) + ' ft<dd>dist ' + elem_cost[iel-1].dist.toFixed(1) + ' ml')
+                        .addTo(mymap));
+                        //console.log(iel + " " + elem_cost[iel-1].id);
+                    }
+
+                    // Highlight the selected scenario
+                    if (chartPareto.options.data[5].dataPoints.length == 1){
+                        chartPareto.options.data[5].dataPoints[0].x = e.dataPoint.x;
+                        chartPareto.options.data[5].dataPoints[0].y = e.dataPoint.y;
+                    }   
+                    else
+                        chartPareto.options.data[5].dataPoints.push({ x: e.dataPoint.x, y: e.dataPoint.y});
+                    chartPareto.render(); 
+
+                    // Plot the Storage gain and stream axchenge for the selected scenario
+                    chartBudget.options.data[0].dataPoints = StorageGain[e.dataPoint.id-1].Values;
+                    chartBudget.options.data[1].dataPoints = StreamGain[e.dataPoint.id-1].Values;
+                    chartBudget.render();
+                }
+
+
+                // GW storage and stream interaction graph
+                var chartBudget = new CanvasJS.Chart("chartBudget",{
+                    theme:"light2",
+                    animationEnabled: true,
+                    zoomEnabled: true,
+                    title:{
+                        text: "Storage and Stream gain"
+                    },
+                    axisX: {
+                        title: "Time",
+                        suffix : ""
+                    },
+                    axisY: {
+                        title: "Cumulative volume [MAF]",
+                        suffix : "",
+                        //lineColor: "#4F81BC",
+                        //tickColor: "#4F81BC"
+                    },
+                    toolTip: {
+                        shared: true
+                    },
+                    legend:{
+                        cursor:"pointer",
+                        //itemclick : toggleDataSeries
+                    },
+                    data: [{
+                            type: "spline",
+                            visible: true,
+                            name: "Storage",
+                            color: '#fc8d59',
+                            lineThickness: 3,
+                            //xValueFormatString: "#### sec",
+                            //yValueFormatString: "#,##0.00 m/s",
+                            dataPoints: []//ES[0].Values
+                        },
+                        {
+                            type: "spline",
+                            visible: true,
+                            name: "Stream Gain",
+                            color: '#91bfdb',
+                            lineThickness: 3,
+                            //yValueFormatString: "#,##0.# m",
+                            dataPoints: []//GFS[0].Values
+                        }
+                    ]
+                });
+                chartBudget.render();
+
+                // Prepare diversion time series for display. This do not have to change according to use selection
+                var dtsData = new Array();
+                for (i = 0; i < divNodes.length; i++){
+                    dtsData.push({
+                        type:"line",
+                        //axisYType: "secondary",
+                        name: divNames[i],
+                        showInLegend: false,
+                        visible: true,
+                        markerSize: 0,
+                        lineThickness: 2,
+                        color: divColors[i],
+                        //legendMarkerColor: SWATcolors[i],
+                        //yValueFormatString: "#.### [mg/l]",
+                        dataPoints: divNodes[i].Values
+                    });
+                }
+
+                var chartDiversions = new CanvasJS.Chart("chartDiversions",{
+                    theme:"light2",
+                    animationEnabled: true,
+                    zoomEnabled: true,
+                    title:{
+                        text: "Cumulative Diversion of the 95 percentile"
+                    },
+                    axisX: {
+                        title: "Time",
+                        suffix : ""
+                    },
+                    axisY: {
+                        title: "Diversion [TAF]",
+                        suffix : ""//,
+                        //lineColor: "#4F81BC",
+                        //tickColor: "#4F81BC"
+                    },
+                    toolTip: {
+                        shared: true
+                    },
+                    legend:{
+                        cursor:"pointer",
+                        //itemclick : toggleDataSeries
+                    },
+                    data: dtsData
+
+                });
+                chartDiversions.render();
+
+
+            } // END of ONLOAD function
+        </script>
+    </head>
+
+    <body>
+        
+        <div class="row">
+            <div class="col-sm-3 col-md-5 col-lg-6" style="background-color:whitesmoke;">
+             Click on the elements of the map to read their cost. <br/>
+             Only the elements that were used in the optimization have meaningfull values for distance and lift
+
+              <div id="mapid" style="width: 100%; height: 900px;"></div>
+            </div>
+            <div class="col-sm-9 col-md-7 col-lg-6" style="background-color:whitesmoke;">
+              Click on the pareto solutions to show the receiving elements 
+              <div id="chartPareto" style="height: 450px; width: 90%;"></div>
+              <p>
+
+              </p>
+              <div id="chartBudget" style="height: 350px; width: 90%;"></div>
+              <p>
+                  
+              </p>
+              <div id="chartDiversions" style="height: 350px; width: 90%;"></div>  
+
+            </div>
+          </div>
+
+        <script>
+            var mymap = L.map('mapid').setView([36.5, -120.5], 8);
+            //'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+            }).addTo(mymap)
+            // Plot the elements with color according to their land price
+            function colorLand(t){
+                var r = 255;
+                var g = Math.round((1-t)*255);
+                var b = 0;
+                return RGBToHex(r,g,b) ;
+
+
+            }
+
+            function RGBToHex(r,g,b) {
+                    r = r.toString(16);
+                    g = g.toString(16);
+                    b = b.toString(16);
+
+                    if (r.length == 1)
+                        r = "0" + r;
+                    if (g.length == 1)
+                        g = "0" + g;
+                    if (b.length == 1)
+                        b = "0" + b;
+
+                    return "#" + r + g + b;
+                }
+            // Plot all the elements and their prices    
+            for(var i = 0; i < elem_cost.length; i++){
+                var price_norm = Math.min((elem_cost[i].land - 5000)/16930,1);
+                if (elem_cost[i].dist != 1000){
+                    L.polygon(elem_cost[i].Polygon,{color: elem_cost[i].color, opacity: 1, weight: 3, stroke: true, fillOpacity: 0.65}).addTo(mymap);
+                }
+
+                L.polygon(elem_cost[i].Polygon, 
+                {color: colorLand(price_norm), opacity: 0.85, weight: 0.5, stroke: true, fillOpacity: 0.5})
+                .bindPopup('Land '+ elem_cost[i].land.toFixed(2) + ' $<dd>lift ' + elem_cost[i].lift.toFixed(1) + ' ft<dd>dist ' + elem_cost[i].dist.toFixed(1) + ' ml')
+                .addTo(mymap);
+
+            }
+            // Add the rivers
+            L.geoJSON(c2vsim_rivers).addTo(mymap);
+
+
+            // Plot the diversion nodes
+            for (var i = 0; i < divNodes.length; i++){
+                L.circleMarker(divNodes[i].OptPoint,
+                {color: divNodes[i].color, fillColor: divNodes[i].color, opacity: 1.0, weight: 1, fillOpacity: 1.0, radius: 4}).addTo(mymap);
+                
+                for (var j = 0; j < divNodes[i].ActDivs.length; j++){
+                    L.circleMarker(divNodes[i].ActDivs[j],
+                        {color: divNodes[i].color, fillColor: divNodes[i].color, opacity: 1.0, weight: 1, fillOpacity: 1.0, radius: 7}).addTo(mymap);
+                }
+            }
+        </script>
+    </body>
+</html>

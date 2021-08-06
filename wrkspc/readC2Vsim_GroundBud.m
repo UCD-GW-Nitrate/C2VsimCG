@@ -15,15 +15,15 @@ end
 
 fid = fopen(filename,'r');
 
-frmt = '%s';
-for i = 1:15 %This is the number of columns after the dates
-	frmt = [frmt ' %f'];
-end
-
 DataHeader = {'Deep Percolation', 'Beginning Storage', 'Ending Storage', ...
 	'Net Deep Percolation', 'Gain from Stream', 'Recharge', 'Gain from Lake', ...
 	'Boundary Inflow', 'Subsidence', 'Subsurface Irrigation', 'Tile Drain Outflow', ...
-	'Pumping', 'Net Subsurface Inflow', 'Discrepancy', 'Cumulative Subsidence'};
+	'Pumping', 'Net Subsurface Inflow', 'Discrepancy', 'Cumulative Subsidence'}';
+
+frmt = '%s';
+for i = 1:length(DataHeader) 
+	frmt = [frmt ' %f'];
+end
 
 for isub = 1:NsubRegions
 	% skip 8 lines
@@ -31,10 +31,10 @@ for isub = 1:NsubRegions
 		temp = fgetl(fid);
     end
 	
-     display(['Subregion ' num2str(isub)]);
-    if exist ('OCTAVE_VERSION', 'builtin') > 0
-        fflush(stdout);
-    end
+    %display(['Subregion ' num2str(isub)]);
+    %if exist ('OCTAVE_VERSION', 'builtin') > 0
+    %    fflush(stdout);
+    %end
     
 	for i = 1:Ntimes
 		C = textscan(fid, frmt,1);
@@ -49,7 +49,6 @@ for isub = 1:NsubRegions
         temp = fgetl(fid);
     end
 end
-
 
 fclose(fid);
 
